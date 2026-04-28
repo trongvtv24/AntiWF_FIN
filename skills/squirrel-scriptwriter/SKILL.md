@@ -1,6 +1,6 @@
 ---
 name: squirrel-scriptwriter
-description: "YouTube scriptwriter for Squirrel Finance channel. Writes brand-consistent scripts (8-15 min) using the squirrel/acorn/golden-leaf metaphor system. Auto-researches data from the internet, generates outlines and full long-form scripts, AI image prompts, thumbnails, descriptions, tags, and sequel hooks. Trigger: /script command, or when user mentions writing scripts, kịch bản, screenplay for Squirrel Finance. Follows the 9-part script formula from Brand Bible with retention beats every 20-40 seconds."
+description: "YouTube scriptwriter and channel-DNA source for Squirrel Finance / Money Explained by a Squirrel. Writes brand-consistent scripts (8-15 min) using the squirrel/acorn/golden-leaf metaphor system, auto-researches data, generates outlines, full long-form scripts, visual DNA handoff notes, thumbnails, descriptions, tags, and sequel hooks. Trigger: /script command, or when user mentions writing scripts, kịch bản, screenplay for the Squirrel channel. Follows the 9-part script formula from Brand Bible with retention beats every 20-40 seconds. Final image/video prompt generation is delegated to timestamp-to-visual-prompt and squirrel-video-director."
 version: 1.0.0
 # AWF_METADATA_START
 type: skill
@@ -287,79 +287,56 @@ End with an intentional hook to the next video:
 - "If you want, the next thing our squirrel should explain is..."
 - "The next layer of this story is..."
 
-### Phase 5: AI Visual Prompts 🎨 (For Image & Video Generators)
+### Phase 5: Visual DNA Handoff 🎨
 
-After the script is approved, generate Google Banana AI visual prompts for the entire video:
+After the script is approved, do **not** generate final image/video prompts in this skill. `squirrel-scriptwriter` is the source of truth for story DNA, channel voice, character rules, metaphor logic, and what the video means. Final prompt production belongs to:
 
-**🔥 CRITICAL AI RULE (PREVENT AI BIAS)**:
-Even if the user asks for "Video Prompts" (instead of Image Prompts) to use in Kling, Sora, or Runway, you **MUST** strictly use the EXACT SAME 2D Vector Base Prompt below. NEVER switch to "3D", "Cinematic", or "Pixar" styles to optimize for video AI. It MUST be pure white background vector cartoon only.
+1. `timestamp-to-visual-prompt` — segment the timestamped script into a clean scene-plan JSON.
+2. `squirrel-video-director` — turn that scene plan into production-ready prompts for image/video tools.
 
-#### Base Prompt (ALWAYS start every scene prompt with EXACTLY this):
+Create a compact **Visual DNA Brief** for downstream visual skills:
+
+```markdown
+# [Topic] — Visual DNA Brief
+
+## Canonical Visual Style
+Modern cute vector YouTube explainer style, thick bold black outlines, flat vibrant colors, minimal soft cel shading, clean simple shapes, high contrast, commercial 2D illustration quality, perfect consistency, 16:9, pure white background only, no scenery, no sky, no ground, no room, no landscape, no decorative elements, no environment details.
+
+## Character Lock
+Always the same friendly wise old anthropomorphic brown squirrel with rich brown fur, very large fluffy tail, long white beard, white bushy eyebrows, black round expressive eyes, light beige belly, no clothes, same proportions, same face, same tail, same pose language. The squirrel is curious, relatable, slightly confused, never guru-like. The squirrel represents the audience.
+
+## Symbol Lock
+- Money/cash/USD = golden leaves
+- Assets/value = acorns
+- Long-term growth = oak tree
+- Home/stability = nest
+- Banks/credit = Forest Bank
+- Economy/markets = the forest
+- Recession/tightening = winter
+- Crisis/shock = storm or wildfire
+
+## Key Visual Beats
+| Script section | Narration cue | Core emotion | Symbol/metaphor | Overlay text candidate | Must not show |
+|---|---|---|---|---|---|
+| Hook | [short cue] | [emotion] | [symbol] | [3-7 words] | [phantom content to avoid] |
+
+## Downstream Rules
+- Keep final prompts grounded in the approved script.
+- Use 6-10 second scenes unless user requests a different production format.
+- Keep overlay text as separate metadata by default; do not bake text into generated visuals unless the user explicitly asks for text-baked still images.
+- Never switch to 3D, cinematic realism, anime, detailed backgrounds, or a redesigned squirrel.
 ```
-Modern cute vector YouTube explainer style, thick bold black outlines, flat vibrant colors, minimal soft cel shading, clean simple shapes, whimsical friendly design, high contrast, commercial 2D illustration quality, perfect consistency, 16:9. Pure white background only, no scenery, no sky, no ground, no room, no landscape, no decorative elements, no environment details. Only the main character and minimal symbolic explainer objects. Main character: ALWAYS the same friendly wise old anthropomorphic brown squirrel with rich brown fur, very large fluffy tail, long white beard, white bushy eyebrows, black round expressive eyes, light beige belly, no clothes, same exact proportions, face, tail, pose language, and expression logic, never redesigned. The squirrel is curious, relatable, slightly confused, never guru-like. Fixed symbols: acorn = assets/value, golden leaves = money, oak tree = long-term growth, nest = home/stability, Forest Bank = banks/credit. No 3D, anime, realistic fur, painterly textures, cinematic lighting, detailed backgrounds, or visual drift.
-```
 
-#### Scene Prompt Rules & Generation Logic (MANDATORY):
-1. **Timing Constraint (8-10 Seconds/Clip):** You MUST generate 1 prompt for EXACTLY every 8-10 seconds of the script (roughly every 15-20 words). For a 10-minute video, you must generate around 60-75 prompts. Ensure no overlap/double-counting when looping.
-2. **Visual Action Continuity:** Change the action logic/emotion dynamically based on the script, but NEVER change the squirrel's design. If the script discusses "Debt", the squirrel should sweat holding a "DEBT" weight. If it discusses "Panic", the squirrel runs frantically. Avoid repeating the exact same action too sequentially unless appropriate.
-3. **Emotional Typography Overlay (CRITICAL):** For EVERY prompt, you MUST extract the 1-3 most emotionally impactful or important words from that specific audio chunk to display as bold typography.
-   - *Example:* If the script says "Why would anyone buy something simply because they believe another person will pay more for it tomorrow?", the extracted typography should be `"PAY MORE?"`.
-   - **VEO/AI Text Hack:** You MUST always put the text in exact double quotes and append font instructions. AI video models struggle with text unless explicitly constrained.
-4. **Prompt Assembly Strategy:** Append the Action and Typography to the Base Prompt exactly like this:
-   `[Base Prompt] Specific Scene: [Action description without background details], with a bold white text box at the bottom that says exactly "[EXTRACTED WORDS]", clear typography, sans-serif font.`
+#### Visual Handoff Review
 
-#### Output Format:
-Provide the final prompts as raw text. Do NOT include any markdown quotes, bolding, `[MM:SS]` timestamps, or scene headings between lines. Just output a continuous block of plain texts, separated from each other by EXACTLY **one empty line** (for easy bulk copy-paste).
-
-### Phase 5.5: Prompt Alignment Review 🔍 (MANDATORY — Do NOT skip)
-
-After generating all prompts in Phase 5, you MUST run a full alignment audit **before saving the file**. This phase ensures every prompt is honestly grounded in the script.
-
-#### Step 1: Cross-Reference Every Prompt Against the Script
-
-For EACH generated prompt, check the following three criteria:
+Before Phase 6, verify:
 
 | # | Check | Rule |
 |---|-------|------|
-| 1 | **Scene grounding** | The visual action described in the prompt must correspond to a real moment, idea, or emotion in that section of the script. A prompt must NOT invent content the script did not say. |
-| 2 | **Typography validity** | The bold text overlay ("EXTRACTED WORDS") must pass at least ONE of these three tests: (A) The exact words appear in the script near that timestamp, OR (B) The words are a direct conceptual summary of what the script is saying at that moment, OR (C) The words create a clear emotional trigger (curiosity, surprise, relief, tension) that amplifies viewer retention — without misrepresenting the script's message. |
-| 3 | **No phantom content** | The prompt must NOT visualize statistics, concepts, or comparisons that the script does not mention at all. Common phantom content errors: adding % figures not in the script, referencing rules-of-thumb not stated by the narrator, inserting comparison frames the script never sets up. |
-
-#### Step 2: Coverage Check — Are All Key Script Moments Covered?
-
-After reviewing individual prompts, check coverage at the script level:
-
-1. Read through the full script from start to finish.
-2. Identify the **top 5–8 most emotionally impactful or conceptually critical moments** (e.g., the twist, the wealth gap reveal, the "if you only remember one thing" line).
-3. Confirm that EACH of those moments has a corresponding prompt. If any is missing, add a new prompt for it.
-4. Check for **over-clustering** — if 3+ consecutive prompts illustrate the same idea with no visual progression, consolidate or replace with a more dynamic scene.
-
-#### Step 3: Fix & Flag
-
-For every prompt that fails any check in Step 1 or Step 2:
-
-- **Delete it** if it visualizes content not in the script.
-- **Rewrite it** if the typography is misaligned or invented. Replace with words/phrases that are either: (A) directly from the script, or (B) emotionally resonant summaries with a clear trigger hook.
-- **Add missing prompts** for any uncovered critical moments identified in Step 2.
-- Annotate each fixed prompt with `[REVISED: reason]` inline — then remove the annotation after the full list is finalized.
-
-#### Step 4: Final Alignment Score
-
-After all fixes, output a brief summary:
-
-```
-ALIGNMENT REVIEW SUMMARY
-Total prompts generated: [N]
-Prompts revised: [N]
-Prompts added: [N]
-Prompts removed: [N]
-Critical script moments covered: [N/N]
-Typography issues fixed: [N]
-Phantom content removed: [N]
-Final verdict: APPROVED / NEEDS REVISION
-```
-
-Only proceed to Phase 6 if the final verdict is **APPROVED**.
+| 1 | **Scene grounding** | Every key visual beat comes from a real moment, idea, or emotion in the script. |
+| 2 | **Symbol consistency** | Every suggested visual symbol follows the squirrel/acorn/golden-leaf system. |
+| 3 | **No phantom content** | The brief does not add statistics, comparisons, warnings, or examples absent from the script. |
+| 4 | **Coverage** | The top 5-8 emotional or conceptually critical moments are represented. |
 
 ---
 
@@ -436,13 +413,13 @@ Additional checks:
 | 16 | Script is pre-segmented for TTS (200-300 words/segment)? | |
 | 17 | ALL segments end exactly with ".", "?" or "!"? | |
 
-Prompt Alignment checks (Phase 5.5):
+Visual DNA handoff checks (Phase 5):
 | # | Check | Pass? |
 |---|-------|-------|
-| 18 | Phase 5.5 Alignment Review completed and verdict is APPROVED? | |
-| 19 | Every prompt's visual action corresponds to an actual script moment (no phantom content)? | |
-| 20 | Every typography overlay either quotes the script, summarizes it accurately, or delivers a clear emotional trigger? | |
-| 21 | All top 5–8 critical/emotional script moments have a dedicated prompt? | |
+| 18 | Visual DNA Brief completed for downstream prompt skills? | |
+| 19 | All suggested visual beats are grounded in actual script moments (no phantom content)? | |
+| 20 | All symbols follow the squirrel/acorn/golden-leaf system? | |
+| 21 | Top 5-8 critical/emotional script moments are represented? | |
 
 ---
 
@@ -452,7 +429,7 @@ When the workflow is complete, deliver files in this order:
 
 1. **`[Topic]_Outline.md`** — Plain text outline (Phase 3)
 2. **`[Topic]_Script.md`** — Full long-form script (Phase 4)
-3. **`[Topic]_AI_Prompts.md`** — AI image prompts for every scene (Phase 5)
+3. **`[Topic]_Visual_DNA_Brief.md`** — Channel visual DNA handoff for downstream prompt skills (Phase 5)
 4. **`[Topic]_YouTube_Package.md`** — Title, description, tags, thumbnail (Phase 6)
 5. **Quality Review summary** — Checklist results (Phase 7)
 
@@ -484,3 +461,4 @@ Use these patterns throughout the script:
 - **No investment advice**: Never tell viewers what to buy/sell
 - **Separate explanation from opinion**: If touching controversial topics, clearly label interpretations
 - **Data accuracy**: Always verify data points from multiple sources when possible
+- **Visual prompts delegated**: Use `timestamp-to-visual-prompt` and `squirrel-video-director` for final image/video prompt generation

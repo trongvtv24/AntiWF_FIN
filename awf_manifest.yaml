@@ -283,7 +283,7 @@ workflows:
     next_workflows: ["/save-brain"]
     required_gates: ["global_safety_truthfulness_gate"]
     required_skills: ["squirrel-scriptwriter"]
-    conditional_skills: ["awf-research-agent", "timestamp-to-visual-prompt", "manim-video", "remotion-video-creation"]
+    conditional_skills: ["awf-research-agent", "timestamp-to-visual-prompt", "squirrel-video-director", "manim-video", "remotion-video-creation"]
   - command: null
     name: "readme"
     path: "global_workflows/README.md"
@@ -642,7 +642,7 @@ skills:
     path: "skills/squirrel-video-director/SKILL.md"
     category: "video"
     activation: "explicit_or_intent"
-    priority: "low"
+    priority: "medium"
     risk_level: "medium"
     related_workflows: ["/script"]
     allowed_side_effects: ["draft_prompts"]

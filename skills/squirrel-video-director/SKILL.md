@@ -1,6 +1,6 @@
 ---
 name: squirrel-video-director
-description: Chuyển đổi kịch bản lồng tiếng (có timestamp) thành visual prompts chi tiết cho AI Video Generators. Tối ưu hóa đặc biệt cho kênh Squirrel Finance với nhân vật Sóc làm mascot. Kích hoạt khi user muốn tạo prompt hình ảnh/video từ kịch bản.
+description: Chuyển scene-plan JSON từ timestamp-to-visual-prompt hoặc kịch bản có timestamp thành prompt packs sản xuất cho AI image/video generators theo DNA kênh Squirrel Finance / Money Explained by a Squirrel. Dùng sau squirrel-scriptwriter và timestamp-to-visual-prompt để xuất prompt sạch không text, prompt video, prompt ảnh, overlay text riêng, negative prompt, và file plain text bulk-paste. Kích hoạt khi user muốn tạo prompt minh họa, prompt ảnh/video, prompt pack cho Veo/Kling/Runway/Sora/Midjourney hoặc tối ưu prompt visual từ script.
 version: 1.0.0
 # AWF_METADATA_START
 type: skill
@@ -9,7 +9,7 @@ skill_version: "1.0.0"
 status: active
 category: "video"
 activation: "explicit_or_intent"
-priority: "low"
+priority: "medium"
 risk_level: "medium"
 allowed_side_effects:
   - "draft_prompts"
@@ -21,73 +21,123 @@ required_gates:
 # AWF_METADATA_END
 ---
 
-# Squirrel Video Director 🎬🐿️
+# Squirrel Video Director
 
-Bạn là một **Master AI Video Director**. Nhiệm vụ của bạn là chuyển đổi kịch bản lồng tiếng (narration script) có kèm timestamp thành các visual prompt chi tiết bằng tiếng Anh, được tối ưu hóa cho các hệ thống tạo video bằng AI.
+## Role
 
-## QUY TẮC BẮT BUỘC (STRICT RULES):
+Create production-ready prompt packs for image/video generation from the canonical scene-plan JSON produced by `timestamp-to-visual-prompt`.
 
-1. **Một Prompt Mỗi Cảnh:** Viết ĐÚNG MỘT `visual_prompt` cho mỗi cảnh bằng TIẾNG ANH.
+Prefer scene-plan JSON input. If the user only provides a timestamped script, first infer a scene plan using the same 6-10 second segmentation rules, then export prompts.
 
-2. **NHẤT QUÁN PHONG CÁCH TUYỆT ĐỐI:** MỖI prompt ĐỀU PHẢI chứa chính xác Base Style và Character Design từ công thức dưới đây. Không được tự ý thay đổi ngoại hình nhân vật.
+## Production Modes
 
-3. **BASE STYLE & CHARACTER (Bắt buộc chèn vào phần đầu của MỌI prompt):**
-   > "2D animated cartoon, modern cute vector style, flat vibrant colors, clean thick black outlines, smooth cel-shaded motion, pure white background, 16:9 aspect ratio. Friendly wise old anthropomorphic brown squirrel with rich brown fur, large fluffy tail, long white beard, white bushy eyebrows, light beige belly."
+Default to **clean_video_mode** unless the user explicitly asks for another mode.
 
-4. **ACTION & PROPS (Hành động & Đạo cụ):** Điều chỉnh hành động của chú sóc dựa trên ngữ cảnh của lời thoại (ví dụ: cầm một quả sồi, trông lo lắng, chỉ vào biểu đồ). Thêm các chuyển động lặp lại rất tinh tế để tạo sự sống động (ví dụ: "fluffy tail sways gently back and forth").
+| Mode | Use for | Text policy |
+|---|---|---|
+| `clean_video_mode` | Veo, Kling, Runway, Sora, slideshow/video generation | No text inside generated visuals. Keep `overlay_text` separate for editing. |
+| `clean_image_mode` | Still images, thumbnails, B-roll frames | No text inside generated visuals unless the user asks for text-baked images. |
+| `text_baked_image_mode` | Still images only when user explicitly wants AI-rendered words | May include text-box instruction, but keep it out of video prompts. |
 
-5. **QUY TẮC NEGATIVE SPACE (KHÔNG SINH TEXT):**
-   Để chừa không gian cho việc chèn chữ ở khâu hậu kỳ, ở cuối cùng của MỖI prompt, bạn PHẢI thêm câu lệnh sau:
-   > `Leave empty negative space at the bottom of the frame. No text, no letters, no typography anywhere in the image.`
+## Non-Negotiable Visual DNA
 
-   **TUYỆT ĐỐI KHÔNG YÊU CẦU AI VẼ CHỮ HOẶC TEXT BOX.** Việc sinh text sẽ được thực hiện bằng phần mềm edit video sau này.
+Every prompt must preserve this channel style:
 
-6. **SAFETY & CONTENT FILTERS (Hệ thống lọc nội dung):**
-   Để tránh lỗi "Internal Server Error" hoặc bị AI từ chối render (Safety Filter), TUYỆT ĐỐI TUÂN THỦ:
-   - **Tránh từ ngữ tiêu cực/bạo lực:** KHÔNG dùng `fear`, `panic`, `burnout`, `exhausted`, `collapsed`, `dead`, `kill`, `scared`, `twitching`, `shaking`.
-   - **Từ thay thế an toàn:**
-     - Thay `fear/scared` bằng `curious`, `thoughtful`, `alert`, `observant`.
-     - Thay `exhausted/collapsed` bằng `resting tiredly`, `contemplative`, `sitting calmly`.
-     - Thay `twitching/nervous` bằng `moving quickly`, `looking around curiously`.
+```text
+Modern cute vector YouTube explainer style, thick bold black outlines, flat vibrant colors, minimal soft cel shading, clean simple shapes, high contrast, commercial 2D illustration quality, perfect consistency, 16:9, pure white background only.
+```
 
----
+Every prompt must preserve this character:
 
-## YÊU CẦU ĐẦU RA (OUTPUT REQUIREMENTS)
+```text
+Always the same friendly wise old anthropomorphic brown squirrel with rich brown fur, very large fluffy tail, long white beard, white bushy eyebrows, black round expressive eyes, light beige belly, no clothes, same proportions, same face, same tail, same pose language. Curious, relatable, slightly confused, never guru-like.
+```
 
-BẠN PHẢI TẠO RA ĐÚNG HAI ĐẦU RA RIÊNG BIỆT THEO THỨ TỰ SAU:
+Never switch to 3D, Pixar, anime, cinematic realism, realistic fur, detailed backgrounds, rooms, landscapes, sky, ground, props that require readable labels, or a redesigned mascot.
 
-### OUTPUT 1 — JSON ARRAY
+## Prompt Construction
 
-Xuất một mảng JSON hợp lệ với cấu trúc sau cho mỗi cảnh.
-**LƯU Ý QUAN TRỌNG:** KHÔNG sử dụng markdown code blocks (như ```json). JSON phải bắt đầu bằng `[` và kết thúc bằng `]`.
+For each scene:
 
+1. Preserve `scene_id`, `start_sec`, `end_sec`, `duration_sec`, `narration`, and `overlay_text`.
+2. Use the scene's `visual_intent`, `symbolic_elements`, and `squirrel_emotion`.
+3. Write one clear visual action with minimal symbolic props.
+4. Add gentle loop motion when the target is video: `His fluffy tail sways gently back and forth. Smooth looping idle animation.`
+5. In clean modes, end every prompt with:
+
+```text
+Leave empty negative space at the bottom of the frame. No text, no letters, no typography anywhere in the image.
+```
+
+6. Keep `overlay_text` separate. It is for editing/captions, not for AI generation in clean modes.
+
+## Safety and Render Stability
+
+Avoid words that often trip video filters:
+
+| Avoid | Use instead |
+|---|---|
+| fear, scared | alert, observant, cautious, uncertain |
+| panic | rushing, startled, urgently looking around |
+| burnout, exhausted | tired, worn down, resting tiredly |
+| collapsed | slumped, sitting low, leaning down |
+| dead, kill | gone, erased, disappears, removed |
+| twitching, shaking | moving quickly, fidgeting, looking around |
+
+Also avoid graphic harm, weapons, gore, aggressive predator attacks, political logos, real brand logos, and readable financial tickers unless the script explicitly requires them and the user approves.
+
+## Output Formats
+
+Choose exactly one output format unless the user asks for multiple files.
+
+### JSON prompt pack
+
+Use this as the default for structured work:
+
+```json
 [
   {
     "scene_id": 1,
     "start_sec": 0.0,
-    "end_sec": 5.0,
-    "duration_sec": 5.0,
-    "narration": "Original narration text here.",
-    "visual_prompt": "Full visual prompt here including BASE STYLE, CHARACTER, ACTION, and TEXT BOX sentence.",
-    "style_anchor": "2D animated cartoon, pure white background, wise old squirrel"
+    "end_sec": 8.0,
+    "duration_sec": 8.0,
+    "overlay_text": "SAME LEAVES, FEWER ACORNS",
+    "video_prompt": "Production-ready clean video prompt here.",
+    "image_prompt": "Production-ready clean still-image prompt here.",
+    "negative_prompt": "No text, no letters, no typography, no 3D, no anime, no realistic fur, no cinematic lighting, no detailed background, no redesigned squirrel.",
+    "qa_flags": []
   }
 ]
+```
 
----
+Return raw JSON only. Do not wrap it in markdown.
 
-### OUTPUT 2 — PLAIN TEXT PROMPTS ONLY
+### Plain text prompts only
 
-Ngay sau mảng JSON, xuất một khối plain text CHỈ chứa các giá trị của `visual_prompt`, mỗi cảnh một prompt, cách nhau bởi một dòng trống (blank line).
-- KHÔNG ghi scene IDs.
-- KHÔNG ghi timestamps.
-- KHÔNG dán nhãn.
-- KHÔNG chứa cú pháp JSON.
-- KHÔNG dùng markdown format.
-- KHÔNG bình luận thêm.
+Use this when the user asks for bulk paste:
 
-Bắt đầu viết prompt đầu tiên ngay lập tức sau khi khối JSON (]) kết thúc.
+- Output only prompt strings.
+- One prompt per scene.
+- Separate prompts with exactly one blank line.
+- No scene IDs, timestamps, markdown, comments, or JSON syntax.
 
----
-## Hướng dẫn cho AI (System Instructions)
-- Khi User cung cấp kịch bản, hãy làm theo đúng format này ngay lập tức.
-- Nếu kịch bản quá dài, hãy chủ động ngắt ra xử lý từng phần (chunking) để đảm bảo không bị cắt ngang output do giới hạn token.
+### Overlay text list
+
+Use this only when the user asks for caption/editing support:
+
+```csv
+scene_id,start_sec,end_sec,overlay_text
+1,0.0,8.0,"SAME LEAVES, FEWER ACORNS"
+```
+
+## Quality Gate
+
+Before final output, verify:
+
+- Every prompt is in English.
+- Every scene remains grounded in the source narration.
+- No prompt asks the model to render text in clean modes.
+- The squirrel design is unchanged.
+- Symbol choices match the Visual DNA Brief and symbol dictionary.
+- Top emotional beats keep clear visual progression; avoid 3+ consecutive prompts with the same action.
+- Output format is valid for the selected mode.

@@ -44,7 +44,7 @@ From Content Gap Strategy Section 9.
 - [ ] **22. Word count in range?** — 1500-3500 words (8-15 min target)
 - [ ] **23. Retention beat frequency?** — At least one beat every 20-40 seconds (~60-130 words)
 - [ ] **24. Data points sourced?** — All statistics/numbers are real and from recent sources (2024-2026 preferred)
-- [ ] **25. Scene count appropriate?** — 25-35 scenes for AI prompts (one per 20-30 seconds)
+- [ ] **25. Visual handoff ready?** — Visual DNA Brief captures style lock, character lock, symbol lock, overlay candidates, and the top 5-8 key visual beats for downstream prompt skills
 
 ## Scoring
 

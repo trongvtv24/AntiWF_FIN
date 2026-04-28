@@ -1,7 +1,7 @@
 ---
 name: timestamp-to-visual-prompt
 description: >
-  Chuyển kịch bản có timestamp thành visual prompts JSON tối ưu cho AI tạo hình (Kling, Udio, Runway, v.v.) theo format chuẩn kênh Squirrel Finance. Tự động phân đoạn cảnh, tính thời lượng, áp dụng Symbolic Dictionary (Sóc tài chính), và xuất JSON raw thuần túy sẵn sàng paste vào tool. Kích hoạt bằng lệnh /timestamp-to-prompt. Keywords: /timestamp-to-prompt, visual prompt, timestamp, json, scene, tạo ảnh, hình ảnh, create image, kịch bản, squirrel, sóc, prompt ảnh, ai image, generate image.
+  Chuyển kịch bản có timestamp và Visual DNA Brief của kênh Squirrel Finance / Money Explained by a Squirrel thành scene-plan JSON chuẩn để tạo ảnh/video minh họa. Dùng sau squirrel-scriptwriter và trước squirrel-video-director. Tự động phân đoạn cảnh 6-10 giây, tính thời lượng, map biểu tượng squirrel/acorn/golden-leaf, tách overlay_text khỏi visual_prompt, chống phantom content, và xuất raw JSON hợp lệ. Kích hoạt bằng /timestamp-to-prompt hoặc khi user paste script có timestamp và yêu cầu tạo scene plan, visual prompt JSON, prompt ảnh/video, prompt minh họa.
 version: 1.0.0
 # AWF_METADATA_START
 type: skill
@@ -22,158 +22,113 @@ required_gates:
 # AWF_METADATA_END
 ---
 
-# 🎬 Timestamp → Visual Prompt Generator
+# Timestamp to Visual Scene Plan
 
-## MÔ TẢ
-Skill này biến kịch bản YouTube (có timestamp) thành một mảng JSON chứa **visual prompts tối ưu cho AI tạo hình**, theo phong cách chuẩn kênh **Money Explained by a Squirrel**.
+## Role
 
----
+Turn a timestamped script into the canonical visual scene-plan JSON for Squirrel Finance / Money Explained by a Squirrel. This is the first visual step after `squirrel-scriptwriter`.
 
-## TRIGGER
-Kích hoạt khi:
-- User gõ lệnh **`/timestamp-to-prompt`** ← lệnh chính
-- User paste kịch bản có timestamp và yêu cầu tạo prompt ảnh
-- User nhắc "tạo prompt ảnh", "visual prompt", "tạo hình từ kịch bản", "scene prompt", "prompt cho AI tạo hình"
+This skill does not rewrite the script and does not create YouTube packaging. It translates approved narration into grounded scene data that `squirrel-video-director` can export into tool-specific image/video prompts.
 
----
+## Inputs
 
-## HƯỚNG DẪN THỰC HIỆN
+Require a timestamped script using `[MM:SS]` or `[HH:MM:SS]`.
 
-### BƯỚC 1 — NHẬN INPUT
-Yêu cầu user cung cấp (nếu chưa có):
-- **Kịch bản** có timestamp theo định dạng: `[MM:SS]` hoặc `[HH:MM:SS]`
-- Mỗi dòng là một câu/đoạn narration tương ứng với timestamp
+Use the Visual DNA Brief from `squirrel-scriptwriter` when available. If it is missing, use the channel defaults below without asking unless the missing brief creates ambiguity.
 
-Ví dụ input:
-```
-[00:00] Chào mừng các bạn đến với kênh Sóc Tài Chính!
-[00:05] Hôm nay chúng ta sẽ nói về lạm phát — kẻ thù thầm lặng của túi tiền bạn.
-[00:12] Tưởng tượng mỗi ngày, cái bóng của con cáo ngày càng lớn hơn...
+## Channel Defaults
+
+**Visual style anchor**
+
+```text
+Modern cute vector YouTube explainer style, thick bold black outlines, flat vibrant colors, minimal soft cel shading, clean simple shapes, high contrast, commercial 2D illustration quality, perfect consistency, 16:9, pure white background only.
 ```
 
----
+**Character lock**
 
-### BƯỚC 2 — PHÂN ĐOẠN CẢNH (SCENE SEGMENTATION)
-
-1. **Đọc toàn bộ kịch bản** và hiểu ngữ nghĩa từng đoạn
-2. **Ghép các câu ngắn** nếu cần để tạo cảnh có thời lượng lý tưởng **4–6 giây/cảnh**
-3. **Tính toán thời gian**:
-   - Chuyển timestamp sang giây thập phân: `[01:15]` → `75.0`
-   - `start_sec`: Timestamp bắt đầu cảnh
-   - `end_sec`: Timestamp của cảnh **tiếp theo**
-   - `duration_sec`: `end_sec - start_sec`
-   - Cảnh **cuối cùng**: mặc định `duration_sec = 5.0`
-
----
-
-### BƯỚC 3 — TẠO VISUAL PROMPT (THE FORMULA)
-
-Mỗi `visual_prompt` PHẢI viết bằng **Tiếng Anh** và theo đúng cấu trúc 3 phần:
-
-#### PART A — Base Style & Character (BẮT BUỘC ở đầu mỗi prompt)
-```
-2D animated cartoon, modern cute vector style, flat vibrant colors, clean thick black outlines, smooth cel-shaded motion, pure white background, 16:9 aspect ratio, 8 seconds loop. Friendly wise old anthropomorphic brown squirrel with rich brown fur, large fluffy tail, long white beard, white bushy eyebrows, light beige belly.
+```text
+Always the same friendly wise old anthropomorphic brown squirrel with rich brown fur, very large fluffy tail, long white beard, white bushy eyebrows, black round expressive eyes, light beige belly, no clothes, same proportions, same face, same tail, same pose language. Curious, relatable, slightly confused, never guru-like.
 ```
 
-#### PART B — Action & Props (Thích nghi theo nội dung narration)
+**Symbol dictionary**
 
-Mô tả hành động của Sóc dựa trên ngữ cảnh. **PHẢI dùng Symbolic Dictionary** sau để dịch khái niệm tài chính thành ẩn dụ hình ảnh:
-
-| Khái niệm Tài chính | Ẩn dụ Hình ảnh |
+| Concept | Visual symbol |
 |---|---|
-| Tài sản / Giá trị | Acorn (Hạt dẻ) |
-| Tiền bạc / Thu nhập | Golden Leaves (Lá vàng) |
-| Bất động sản / Tài sản cứng | Walnut (Quả óc chó) |
-| Side hustle / Hàng ngắn hạn | Pinecone (Quả thông) |
-| Quỹ dự phòng / Tiền mặt | Nest / Deep Bunker |
-| Tăng trưởng dài hạn | Oak Tree (Cây sồi) |
-| Đa dạng hóa đầu tư | Canopy (Tán cây) |
-| Cố vấn tài chính | Owl with glasses (Cú đeo kính) |
-| Suy thoái / Nghỉ hưu | Winter / Snow |
-| Thị trường tăng | Spring / Rain |
-| Khủng hoảng thị trường | Wildfire / Storm |
-| Vòng quay lao động / Rat Race | Squirrel Wheel |
-| Lạm phát | Shadow of a Fox |
-| Lừa đảo / Đầu tư độc hại | Bright Poisonous Mushroom |
-| Nợ xấu / Bẫy tín dụng | Cage Trap |
+| Money / cash / USD | Golden leaves |
+| Assets / value | Acorns |
+| Long-term growth | Oak tree |
+| Home / stability | Nest |
+| Banks / credit | Forest Bank |
+| Economy / market | The forest |
+| Recession / tightening | Winter |
+| Crisis / shock | Storm or wildfire |
+| Inflation / purchasing power loss | A fox shadow shrinking the value of golden leaves |
+| Debt trap / bad credit | Cage trap |
+| Rat race / repetitive work | Squirrel wheel |
+| Scam / toxic investment | Bright poisonous mushroom |
 
-**Thêm chuyển động lặp nhẹ nhàng**: ví dụ `"His fluffy tail sways gently back and forth. Smooth looping idle animation."`
+## Scene Segmentation
 
-#### PART C — Text Box & Exclusions (BẮT BUỘC ở cuối mỗi prompt)
-```
-Bold white text box at the bottom reads exactly '[5-10 KEYWORDS TRÍCH TỪ NARRATION]' in clean sans-serif font. No background, no environment, no 3D, no realism.
-```
+1. Parse all timestamps and convert them to seconds.
+2. Group narration into scenes with a target duration of **8 seconds**, acceptable range **6-10 seconds**.
+3. Split any scene longer than 12 seconds unless it must stay together for meaning.
+4. Merge very short adjacent lines when they express the same idea.
+5. For a 10-minute video, expect roughly **60-75 scenes**.
+6. For the final scene, use the previous pacing as a guide; default to `8.0` seconds if no end timestamp exists.
 
----
+## Prompt Rules
 
-### BƯỚC 4 — ĐỊNH DẠNG JSON OUTPUT (CỰC KỲ QUAN TRỌNG)
+Each `visual_prompt` must:
 
-**Chỉ xuất JSON thuần túy, tuyệt đối KHÔNG:**
-- Bọc trong markdown code block (` ```json `)
-- Thêm text giới thiệu hoặc kết luận
-- Ký tự đầu tiên PHẢI là `[`, ký tự cuối cùng PHẢI là `]`
+- Be written in English.
+- Start from the style anchor and character lock.
+- Describe only one clear visual action or metaphor.
+- Use simple symbolic objects, not complex environments.
+- Leave room for editor-added captions.
+- Never ask the image/video model to draw words, letters, labels, charts with readable text, or a text box.
+- Never add facts, numbers, comparisons, characters, or warnings that the narration did not establish.
 
-**Cấu trúc JSON:**
-```
+Store on-screen words separately in `overlay_text`. Do not bake text into `visual_prompt` by default.
+
+## JSON Output
+
+Output raw JSON only. Do not wrap it in markdown. The first character must be `[` and the last character must be `]`.
+
+Use this schema for every scene:
+
+```json
 [
   {
     "scene_id": 1,
     "start_sec": 0.0,
     "end_sec": 8.0,
     "duration_sec": 8.0,
+    "script_section": "Real-life Hook",
+    "beat_type": "hook",
     "narration": "Original narration text here.",
-    "visual_prompt": "2D animated cartoon, modern cute vector style, flat vibrant colors, clean thick black outlines, smooth cel-shaded motion, pure white background, 16:9 aspect ratio, 8 seconds loop. Friendly wise old anthropomorphic brown squirrel with rich brown fur, large fluffy tail, long white beard, white bushy eyebrows, light beige belly. [MÔ TẢ HÀNH ĐỘNG + ẨN DỤ]. His fluffy tail sways gently back and forth. Smooth looping idle animation. Bold white text box at the bottom reads exactly 'KEYWORDS HERE' in clean sans-serif font. No background, no environment, no 3D, no realism."
+    "visual_intent": "Show the ordinary squirrel feeling the pressure of rising prices.",
+    "symbolic_elements": ["golden leaves", "fox shadow"],
+    "squirrel_emotion": "alert and curious",
+    "overlay_text": "SAME LEAVES, FEWER ACORNS",
+    "prompt_mode": "clean_no_text",
+    "visual_prompt": "Modern cute vector YouTube explainer style, thick bold black outlines, flat vibrant colors, minimal soft cel shading, clean simple shapes, high contrast, commercial 2D illustration quality, perfect consistency, 16:9, pure white background only. Always the same friendly wise old anthropomorphic brown squirrel with rich brown fur, very large fluffy tail, long white beard, white bushy eyebrows, black round expressive eyes, light beige belly, no clothes, same proportions, same face, same tail, same pose language. The squirrel holds the same small pile of golden leaves while nearby acorns become fewer, with a soft fox shadow stretching behind the leaves. His fluffy tail sways gently back and forth. Leave empty negative space at the bottom of the frame. No text, no letters, no typography anywhere in the image.",
+    "negative_prompt": "No text, no letters, no typography, no 3D, no anime, no realistic fur, no cinematic lighting, no detailed background, no redesigned squirrel."
   }
 ]
 ```
 
----
+## Quality Gate
 
-## QUY TẮC ĐẢM BẢO CHẤT LƯỢNG
+Before final output, verify:
 
-1. ✅ **Mỗi cảnh phải có đủ 3 phần** A + B + C trong `visual_prompt`
-2. ✅ **Thời lượng lý tưởng**: 4–6 giây/cảnh (ghép câu nếu cần)
-3. ✅ **Ẩn dụ**: Luôn dùng Symbolic Dictionary, KHÔNG dùng khái niệm tài chính trực tiếp trong prompt
-4. ✅ **Keywords text box**: Trích ngắn gọn 5–10 từ khóa từ narration, viết IN HOA
-5. ✅ **Output RAW JSON**: Không markdown wrapper, không text thừa
-6. ✅ **Cảnh cuối**: Nếu không có timestamp tiếp theo, `duration_sec = 5.0`
+- JSON parses as valid JSON.
+- Scene durations are mostly 6-10 seconds.
+- Every scene is grounded in the nearby narration.
+- `overlay_text` is 3-7 strong words copied or summarized from the narration.
+- `visual_prompt` contains no text-box instruction.
+- All top 5-8 emotional or conceptually critical script moments are represented.
+- No phantom statistics, comparisons, claims, or visual storylines were added.
 
----
+## Handoff
 
-## VÍ DỤ MINH HỌA
-
-**INPUT:**
-```
-[00:00] Lạm phát là kẻ thù thầm lặng của túi tiền bạn.
-[00:06] Mỗi ngày bạn không đầu tư, cái bóng con cáo ngày càng lớn hơn.
-```
-
-**OUTPUT:**
-```
-[
-  {
-    "scene_id": 1,
-    "start_sec": 0.0,
-    "end_sec": 6.0,
-    "duration_sec": 6.0,
-    "narration": "Lạm phát là kẻ thù thầm lặng của túi tiền bạn.",
-    "visual_prompt": "2D animated cartoon, modern cute vector style, flat vibrant colors, clean thick black outlines, smooth cel-shaded motion, pure white background, 16:9 aspect ratio, 8 seconds loop. Friendly wise old anthropomorphic brown squirrel with rich brown fur, large fluffy tail, long white beard, white bushy eyebrows, light beige belly. The squirrel clutches a pile of golden leaves protectively while a large dark fox shadow looms behind him on the ground, growing larger. His fluffy tail sways gently back and forth. Smooth looping idle animation. Bold white text box at the bottom reads exactly 'LẠM PHÁT KẺ THÙ THẦM LẶNG TÚI TIỀN' in clean sans-serif font. No background, no environment, no 3D, no realism."
-  },
-  {
-    "scene_id": 2,
-    "start_sec": 6.0,
-    "end_sec": 11.0,
-    "duration_sec": 5.0,
-    "narration": "Mỗi ngày bạn không đầu tư, cái bóng con cáo ngày càng lớn hơn.",
-    "visual_prompt": "2D animated cartoon, modern cute vector style, flat vibrant colors, clean thick black outlines, smooth cel-shaded motion, pure white background, 16:9 aspect ratio, 8 seconds loop. Friendly wise old anthropomorphic brown squirrel with rich brown fur, large fluffy tail, long white beard, white bushy eyebrows, light beige belly. The squirrel sits idle on a squirrel wheel spinning slowly, while the fox shadow behind him grows progressively larger with each rotation. His fluffy tail sways gently back and forth. Smooth looping idle animation. Bold white text box at the bottom reads exactly 'KHÔNG ĐẦU TƯ BÓNG CÁO LỚN DẦN' in clean sans-serif font. No background, no environment, no 3D, no realism."
-  }
-]
-```
-
----
-
-## GHI CHÚ THÊM
-- Skill này được thiết kế riêng cho kênh **Money Explained by a Squirrel** (Squirrel Finance)
-- Visual style chuẩn: **2D cartoon, flat vibrant colors, white background**
-- Output JSON được dùng để nhập trực tiếp vào tool tạo slideshow (Grok_Veo_App hoặc tương tự)
-- Kết hợp tốt với skill: `squirrel-scriptwriter` → `timestamp-to-visual-prompt` → `script-segmenter`
+After this skill, use `squirrel-video-director` to create production-ready prompt packs for Veo, Kling, Runway, Sora, Midjourney, image generation, slideshow tools, or a plain `.txt` bulk-paste file.
