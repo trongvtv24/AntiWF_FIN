@@ -78,6 +78,16 @@ Typical Windows location:
 %USERPROFILE%\.gemini\antigravity\
 ```
 
+## Validation
+
+Run the AWF-aware validator after changing workflows, skills, schemas, templates, or `awf_manifest.yaml`:
+
+```bash
+python tools/validate_awf.py --strict
+```
+
+This validator accepts AWF extended frontmatter such as `risk_level`, `required_gates`, `allowed_side_effects`, and `related_workflows`.
+
 ## Notes
 
 - `fb-publisher` is intentionally left as a private/local publishing skill.
