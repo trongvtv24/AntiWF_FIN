@@ -1,0 +1,46 @@
+{
+  "worker": {
+    "check_interval_seconds": 60,
+    "min_gap_between_posts_minutes": 5,
+    "max_retries": 3,
+    "retry_delay_seconds": 30,
+    "post_now_mode_gap_seconds": 10,
+    "schedule_window_minutes": 5
+  },
+  "image": {
+    "width": 1080,
+    "height": 1080,
+    "format": "JPEG",
+    "quality": 90,
+    "save_dir": "C:\\Users\\Administrator\\.gemini\\antigravity\\data\\fb-publisher\\images"
+  },
+  "queue": {
+    "file_path": "C:\\Users\\Administrator\\.gemini\\antigravity\\data\\fb-publisher\\queue\\posts_queue.json",
+    "max_failed_before_skip": 3,
+    "auto_fill_enabled": true,
+    "auto_fill_min_pending": 3,
+    "auto_fill_target": 10
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "C:\\Users\\Administrator\\.gemini\\antigravity\\data\\fb-publisher\\logs\\publisher.log",
+    "max_bytes": 5242880,
+    "backup_count": 3
+  },
+  "token_warning": {
+    "days_before_expiry": 7
+  },
+  "facebook": {
+    "api_base": "https://graph.facebook.com",
+    "request_timeout_seconds": 30,
+    "app_id": "802244476290557",
+    "app_secret": "14c11bfb1ce9b3bd5be4818b9d097fb6"
+  },
+  "content_bridge": {
+    "enabled": true,
+    "gemini_api_key": "",
+    "posts_per_page_per_day": 3,
+    "language": "vi",
+    "auto_generate_image_prompt": true
+  }
+}

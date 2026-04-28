@@ -1,0 +1,55 @@
+{
+  "app_id": "802244476290557",
+  "app_secret": "14c11bfb1ce9b3bd5be4818b9d097fb6",
+  "api_version": "v19.0",
+  "pages": [
+    {
+      "id": "910625175477156",
+      "page_id": "910625175477156",
+      "name": "Mẹ Đức Nhân",
+      "access_token": "EAAucu8mpt2ABQpuDtw47K6xDkV7ompbhWFBGt6w2JSe9rVG8AMT7qxSZAt1ooqHdBm4pCmIPFS3UGomJbgCTzl7MoO0ZC5JYDadPQ4gYc83RW9qstyjaYcldamnzsH5r6hSTk9beHujkIVsp5TFEF3teHBsboB3jYPWlZCOTxX3vZA1tyjHOXEEn2XaUytkYyHxniNkdJkDXglcCL8OVCcJcXisP38S5fXKMLYbfhJbGFT8MJmssxHFbmKhf",
+      "category": "Người sáng tạo nội dung số",
+      "niche": "nuôi con, làm mẹ, chia sẻ kinh nghiệm mẹ bỉm",
+      "active": true,
+      "post_times": ["07:00", "11:30", "19:00"],
+      "content_topics": ["nuôi con", "mẹ thông thái", "sức khỏe trẻ em", "tâm sự mẹ"],
+      "tone": "ấm áp, chân thật, gần gũi"
+    },
+    {
+      "id": "899861366549965",
+      "page_id": "899861366549965",
+      "name": "Tiệm Sức Khỏe",
+      "access_token": "EAAucu8mpt2ABQr5azBkvqHEFVwt2UjM0YhyrxX5AgiHGkilp9IkEdZBQjKWgr3j4ZClJsM6OcZBVmJAZBvN8V3v7vbzPDX7rlaPVXrap0JOZC1OTV4guYzrZA6BoGIkPxkZBvQk6DZAjZB1urXxNKNOaMIN1sPFWj2VidKhYmMldm7vig5ctbU864VoZC5nCYOqyef9HRWbxl8LSH2UrUscZBBHIrfb1ZBqBhX3pOzXm7Nu15hnr8kawJplzmFiOZBAKf",
+      "category": "Vườn cộng đồng",
+      "niche": "sức khỏe, thực phẩm chức năng, sống lành mạnh",
+      "active": true,
+      "post_times": ["06:30", "12:00", "18:30", "21:00"],
+      "content_topics": ["sức khỏe mỗi ngày", "thực phẩm tốt cho sức khỏe", "lối sống lành mạnh", "phòng bệnh"],
+      "tone": "chuyên nghiệp, đáng tin cậy, khoa học"
+    },
+    {
+      "id": "926156813904119",
+      "page_id": "926156813904119",
+      "name": "Youtube - Thay đổi cuộc đời",
+      "access_token": "EAAucu8mpt2ABQlyAet1wZAFL9epnfZCct9405zZBTxRdHeQ6tqeXLOAK0rWN77R043uY6O3gAGZACm2ZARFSKuZCTZByaxSe0vKWjdKf5j3FlXyAGSKaHlXRfGWCFYnD6Jk3d8QtdfYyQ307gHFIaW4slmvYeWNnj2GZAYPHx4E1SY3JJhI9ctV68jU8QfqxAEgdKNejZAqw9uDejy9TKJnTyO0mKtbLfDnSVjP2UVgRSHxAIUZCjFWxZCRhmk5DWKl",
+      "category": "Tư vấn doanh nghiệp",
+      "niche": "phát triển bản thân, kiếm tiền online, tư duy thành công",
+      "active": true,
+      "post_times": ["07:00", "12:30", "20:00"],
+      "content_topics": ["thay đổi tư duy", "kiếm tiền online", "phát triển bản thân", "thành công"],
+      "tone": "truyền cảm hứng, mạnh mẽ, kích động hành động"
+    },
+    {
+      "id": "853006871226242",
+      "page_id": "853006871226242",
+      "name": "Vladimir Putin",
+      "access_token": "EAAucu8mpt2ABQoRcZCRBg7eUdT8pDzaAKFP55wh6VQrMYhQs0XHkeitZBhCZCyMrSN5o0j7xLHAu9zYnMaoDPEVfh9M70YAKKDFNmPyFZCZALPcDKZALc9IXYqwL6EaHF3w7duYBxME46yRa7DtM8oGgIRnBmwsFkVOAQh4aU6vIW1UpqF0cAHV6BRCNCRB9vkWF9oXPcZBjN2GYoekCZC0PjQoUnzioxKZAxYtyObBo3VNdnL9ivBmq3rlwtfTSS",
+      "category": "Người sáng tạo nội dung số",
+      "niche": "địa chính trị, thế giới sự kiện, quan hệ quốc tế",
+      "active": true,
+      "post_times": ["08:00", "13:00", "20:30"],
+      "content_topics": ["tin tức thế giới", "địa chính trị", "chia sẻ góc nhìn", "phân tích sự kiện"],
+      "tone": "quyền lực, phân tích, tạo tranh luận"
+    }
+  ]
+}

@@ -1,0 +1,685 @@
+awf_version: "4.0.0"
+metadata_schema_version: "1.0.0"
+status: "active"
+source_of_truth:
+  router: "awf_manifest.yaml"
+  safety_gate: "global_workflows/GLOBAL_SAFETY_TRUTHFULNESS_GATE.md"
+  context_system: "global_workflows/CONTEXT_SYSTEM.md"
+routing:
+  precedence:
+    - "explicit_command"
+    - "active_workflow_state"
+    - "user_intent"
+    - "contextual_recommendation"
+  default_language: "vi"
+  fallback_workflow: "/help"
+  required_global_gates:
+    - "global_safety_truthfulness_gate"
+  context_contract: "context_system"
+risk_levels:
+  low: "Read-only analysis, explanation, summaries, and recommendations."
+  medium: "Local file edits, generated docs, tests, or bounded local automation."
+  high: "Dependency changes, schema changes, deploy, publish, browser control, process control, or external APIs."
+  critical: "Public posting, production deploy, destructive operations, secrets, or account-impacting actions."
+confirmation_policy:
+  read_only_auto: "May run without user confirmation."
+  normal_edits: "May run after the user asks for implementation."
+  high_risk: "Requires clear user confirmation before execution."
+  forbidden_without_explicit_confirmation:
+    - "production_deploy"
+    - "public_publish"
+    - "delete_data"
+    - "destructive_git"
+    - "secret_or_token_change"
+    - "kill_process"
+    - "schema_migration"
+gates:
+  global_safety_truthfulness_gate:
+    path: "global_workflows/GLOBAL_SAFETY_TRUTHFULNESS_GATE.md"
+    applies_to:
+      - "claims"
+      - "code_change"
+      - "deploy"
+      - "publish"
+      - "research"
+      - "content"
+      - "security"
+  context_system:
+    path: "global_workflows/CONTEXT_SYSTEM.md"
+    applies_to:
+      - "save"
+      - "recap"
+      - "handover"
+      - "session_restore"
+      - "project_memory"
+workflows:
+  - command: "/init"
+    name: "init"
+    path: "global_workflows/init.md"
+    category: "startup"
+    priority: "high"
+    risk_level: "medium"
+    triggers: ["/init", "new project", "khoi tao du an"]
+    next_workflows: ["/brainstorm", "/plan", "/customize"]
+    required_gates: ["global_safety_truthfulness_gate", "context_system"]
+    required_skills: ["awf-onboarding", "git-workflow"]
+    conditional_skills: ["awf-gitnexus-context", "awf-adaptive-language"]
+  - command: "/brainstorm"
+    name: "brainstorm"
+    path: "global_workflows/brainstorm.md"
+    category: "planning"
+    priority: "high"
+    risk_level: "low"
+    triggers: ["/brainstorm", "idea", "research idea", "brainstorm"]
+    next_workflows: ["/plan", "/save-brain"]
+    required_gates: ["global_safety_truthfulness_gate"]
+    required_skills: ["awf-idea-refine"]
+    conditional_skills: ["awf-research-agent", "awf-document-parser", "prompt-optimizer"]
+  - command: "/plan"
+    name: "plan"
+    path: "global_workflows/plan.md"
+    category: "planning"
+    priority: "high"
+    risk_level: "medium"
+    triggers: ["/plan", "spec", "feature plan", "roadmap"]
+    next_workflows: ["/design", "/visualize", "/code"]
+    required_gates: ["global_safety_truthfulness_gate", "context_system"]
+    required_skills: ["awf-spec-writer", "prompt-optimizer"]
+    conditional_skills: ["awf-diagramming", "context-engineering", "postgres-patterns"]
+  - command: "/design"
+    name: "design"
+    path: "global_workflows/design.md"
+    category: "architecture"
+    priority: "high"
+    risk_level: "medium"
+    triggers: ["/design", "architecture", "database design", "flow design"]
+    next_workflows: ["/visualize", "/code"]
+    required_gates: ["global_safety_truthfulness_gate"]
+    required_skills: ["awf-diagramming"]
+    conditional_skills: ["postgres-patterns", "karpathy-coding-principles"]
+  - command: "/visualize"
+    name: "visualize"
+    path: "global_workflows/visualize.md"
+    category: "ui_ux"
+    priority: "high"
+    risk_level: "medium"
+    triggers: ["/visualize", "ui design", "mockup", "ux", "screen design"]
+    next_workflows: ["/code", "/save-brain"]
+    required_gates: ["global_safety_truthfulness_gate"]
+    required_skills: ["ui-ux-pro-max"]
+    conditional_skills: ["design-system", "webapp-testing", "awf-diagramming"]
+  - command: "/code"
+    name: "code"
+    path: "global_workflows/code.md"
+    category: "implementation"
+    priority: "high"
+    risk_level: "medium"
+    triggers: ["/code", "implement", "fix code", "build feature"]
+    next_workflows: ["/run", "/test", "/debug", "/save-brain"]
+    required_gates: ["global_safety_truthfulness_gate", "context_system"]
+    required_skills: ["karpathy-coding-principles"]
+    conditional_skills: ["ui-ux-pro-max", "webapp-testing", "awf-gitnexus-context", "awf-error-translator", "git-workflow"]
+  - command: "/run"
+    name: "run"
+    path: "global_workflows/run.md"
+    category: "operations"
+    priority: "medium"
+    risk_level: "medium"
+    triggers: ["/run", "start app", "launch app", "run project"]
+    next_workflows: ["/test", "/debug", "/deploy"]
+    required_gates: ["global_safety_truthfulness_gate", "context_system"]
+    required_skills: []
+    conditional_skills: ["awf-port-manager", "awf-error-translator"]
+  - command: "/test"
+    name: "test"
+    path: "global_workflows/test.md"
+    category: "quality"
+    priority: "high"
+    risk_level: "low"
+    triggers: ["/test", "qa", "e2e", "browser test"]
+    next_workflows: ["/debug", "/audit", "/deploy"]
+    required_gates: ["global_safety_truthfulness_gate"]
+    required_skills: []
+    conditional_skills: ["webapp-testing", "awf-error-translator"]
+  - command: "/debug"
+    name: "debug"
+    path: "global_workflows/debug.md"
+    category: "quality"
+    priority: "high"
+    risk_level: "medium"
+    triggers: ["/debug", "bug", "error", "fail", "crash"]
+    next_workflows: ["/test", "/save-brain"]
+    required_gates: ["global_safety_truthfulness_gate", "context_system"]
+    required_skills: ["awf-error-translator", "karpathy-coding-principles"]
+    conditional_skills: ["awf-gitnexus-context", "webapp-testing"]
+  - command: "/review"
+    name: "review"
+    path: "global_workflows/review.md"
+    category: "quality"
+    priority: "medium"
+    risk_level: "low"
+    triggers: ["/review", "project review", "handover", "code review"]
+    next_workflows: ["/audit", "/refactor", "/save-brain"]
+    required_gates: ["global_safety_truthfulness_gate"]
+    required_skills: []
+    conditional_skills: ["awf-diagramming", "context-engineering", "ui-ux-pro-max"]
+  - command: "/audit"
+    name: "audit"
+    path: "global_workflows/audit.md"
+    category: "quality"
+    priority: "high"
+    risk_level: "medium"
+    triggers: ["/audit", "security audit", "health check", "seo audit"]
+    next_workflows: ["/code", "/test", "/deploy", "/save-brain"]
+    required_gates: ["global_safety_truthfulness_gate"]
+    required_skills: ["awf-red-teaming"]
+    conditional_skills: ["seo", "deployment-patterns", "performance-optimization", "awf-gitnexus-context"]
+  - command: "/refactor"
+    name: "refactor"
+    path: "global_workflows/refactor.md"
+    category: "maintenance"
+    priority: "medium"
+    risk_level: "medium"
+    triggers: ["/refactor", "cleanup", "optimize code", "remove dead code"]
+    next_workflows: ["/test", "/audit", "/save-brain"]
+    required_gates: ["global_safety_truthfulness_gate"]
+    required_skills: ["karpathy-coding-principles"]
+    conditional_skills: ["awf-deprecation-migration", "performance-optimization", "awf-gitnexus-context"]
+  - command: "/deploy"
+    name: "deploy"
+    path: "global_workflows/deploy.md"
+    category: "release"
+    priority: "high"
+    risk_level: "high"
+    triggers: ["/deploy", "release", "production", "publish app"]
+    next_workflows: ["/test", "/audit", "/rollback", "/save-brain"]
+    required_gates: ["global_safety_truthfulness_gate", "context_system"]
+    required_skills: ["deployment-patterns", "awf-shipping-launch"]
+    conditional_skills: ["github-ops", "seo", "webapp-testing"]
+  - command: "/rollback"
+    name: "rollback"
+    path: "global_workflows/rollback.md"
+    category: "recovery"
+    priority: "high"
+    risk_level: "high"
+    triggers: ["/rollback", "revert", "restore", "emergency"]
+    next_workflows: ["/test", "/debug", "/save-brain"]
+    required_gates: ["global_safety_truthfulness_gate"]
+    required_skills: ["git-workflow"]
+    conditional_skills: ["awf-gitnexus-context"]
+  - command: "/save-brain"
+    name: "save_brain"
+    path: "global_workflows/save_brain.md"
+    category: "context"
+    priority: "high"
+    risk_level: "medium"
+    triggers: ["/save-brain", "save context", "handover", "end session"]
+    next_workflows: ["/recap", "/next"]
+    required_gates: ["context_system", "global_safety_truthfulness_gate"]
+    required_skills: ["awf-auto-save"]
+    conditional_skills: ["awf-note-taking"]
+  - command: "/recap"
+    name: "recap"
+    path: "global_workflows/recap.md"
+    category: "context"
+    priority: "high"
+    risk_level: "low"
+    triggers: ["/recap", "resume", "remember", "continue"]
+    next_workflows: ["/next", "/code", "/debug"]
+    required_gates: ["context_system"]
+    required_skills: ["awf-session-restore"]
+    conditional_skills: ["awf-context-help"]
+  - command: "/next"
+    name: "next"
+    path: "global_workflows/next.md"
+    category: "navigation"
+    priority: "medium"
+    risk_level: "low"
+    triggers: ["/next", "what next", "stuck", "lam gi tiep"]
+    next_workflows: ["/plan", "/code", "/test", "/audit", "/save-brain"]
+    required_gates: ["context_system"]
+    required_skills: ["awf-context-help"]
+    conditional_skills: []
+  - command: "/help"
+    name: "help"
+    path: "global_workflows/help.md"
+    category: "navigation"
+    priority: "medium"
+    risk_level: "low"
+    triggers: ["/help", "help", "guide", "?"]
+    next_workflows: ["/next", "/init", "/recap"]
+    required_gates: ["context_system"]
+    required_skills: ["awf-context-help"]
+    conditional_skills: ["awf-onboarding"]
+  - command: "/customize"
+    name: "customize"
+    path: "global_workflows/customize.md"
+    category: "settings"
+    priority: "medium"
+    risk_level: "medium"
+    triggers: ["/customize", "preferences", "settings", "communication style"]
+    next_workflows: ["/help", "/next"]
+    required_gates: ["context_system"]
+    required_skills: ["awf-adaptive-language"]
+    conditional_skills: []
+  - command: "/fb-post"
+    name: "fb-post"
+    path: "global_workflows/fb-post.md"
+    category: "content_publish"
+    priority: "medium"
+    risk_level: "critical"
+    triggers: ["/fb-post", "facebook post", "fanpage", "publish facebook"]
+    next_workflows: ["/save-brain"]
+    required_gates: ["global_safety_truthfulness_gate", "context_system"]
+    required_skills: ["fb-publisher", "psycho-content-engineer"]
+    conditional_skills: ["awf-research-agent"]
+  - command: "/script"
+    name: "script"
+    path: "global_workflows/script.md"
+    category: "content"
+    priority: "medium"
+    risk_level: "medium"
+    triggers: ["/script", "youtube script", "squirrel finance", "video script"]
+    next_workflows: ["/save-brain"]
+    required_gates: ["global_safety_truthfulness_gate"]
+    required_skills: ["squirrel-scriptwriter"]
+    conditional_skills: ["awf-research-agent", "timestamp-to-visual-prompt", "manim-video", "remotion-video-creation"]
+  - command: null
+    name: "readme"
+    path: "global_workflows/README.md"
+    category: "documentation"
+    priority: "low"
+    risk_level: "low"
+    triggers: ["awf docs", "readme"]
+    next_workflows: ["/help"]
+    required_gates: ["global_safety_truthfulness_gate", "context_system"]
+    required_skills: []
+    conditional_skills: []
+skills:
+  - name: "alex-hormozi-money-models"
+    path: "skills/alex-hormozi-money-models/SKILL.md"
+    category: "business"
+    activation: "explicit_or_intent"
+    priority: "medium"
+    risk_level: "medium"
+    related_workflows: ["/brainstorm", "/plan"]
+    allowed_side_effects: ["none"]
+    requires_confirmation: false
+  - name: "alex-hormozi-offer-builder"
+    path: "skills/alex-hormozi-offer-builder/SKILL.md"
+    category: "business"
+    activation: "explicit_or_intent"
+    priority: "medium"
+    risk_level: "medium"
+    related_workflows: ["/brainstorm", "/fb-post"]
+    allowed_side_effects: ["none"]
+    requires_confirmation: false
+  - name: "awf-adaptive-language"
+    path: "skills/awf-adaptive-language/SKILL.md"
+    category: "system"
+    activation: "automatic"
+    priority: "high"
+    risk_level: "low"
+    related_workflows: ["all"]
+    allowed_side_effects: ["none"]
+    requires_confirmation: false
+  - name: "awf-auto-save"
+    path: "skills/awf-auto-save/SKILL.md"
+    category: "context"
+    activation: "automatic"
+    priority: "high"
+    risk_level: "medium"
+    related_workflows: ["/save-brain", "/code", "/visualize", "/plan"]
+    allowed_side_effects: ["write_context_checkpoint"]
+    requires_confirmation: false
+  - name: "awf-context-help"
+    path: "skills/awf-context-help/SKILL.md"
+    category: "navigation"
+    activation: "automatic_or_explicit"
+    priority: "medium"
+    risk_level: "low"
+    related_workflows: ["/help", "/next", "/recap"]
+    allowed_side_effects: ["none"]
+    requires_confirmation: false
+  - name: "awf-data-science"
+    path: "skills/awf-data-science/SKILL.md"
+    category: "analysis"
+    activation: "intent"
+    priority: "medium"
+    risk_level: "medium"
+    related_workflows: ["/review", "/audit", "/brainstorm"]
+    allowed_side_effects: ["read_data", "generate_report"]
+    requires_confirmation: false
+  - name: "awf-deprecation-migration"
+    path: "skills/awf-deprecation-migration/SKILL.md"
+    category: "maintenance"
+    activation: "conditional"
+    priority: "medium"
+    risk_level: "high"
+    related_workflows: ["/refactor", "/code", "/audit"]
+    allowed_side_effects: ["code_change_plan"]
+    requires_confirmation: true
+  - name: "awf-diagramming"
+    path: "skills/awf-diagramming/SKILL.md"
+    category: "architecture"
+    activation: "conditional"
+    priority: "medium"
+    risk_level: "low"
+    related_workflows: ["/plan", "/design", "/review"]
+    allowed_side_effects: ["generate_diagram"]
+    requires_confirmation: false
+  - name: "awf-document-parser"
+    path: "skills/awf-document-parser/SKILL.md"
+    category: "input"
+    activation: "conditional"
+    priority: "medium"
+    risk_level: "low"
+    related_workflows: ["/brainstorm", "/recap", "/plan"]
+    allowed_side_effects: ["parse_local_document"]
+    requires_confirmation: false
+  - name: "awf-error-translator"
+    path: "skills/awf-error-translator/SKILL.md"
+    category: "quality"
+    activation: "automatic"
+    priority: "high"
+    risk_level: "low"
+    related_workflows: ["/debug", "/code", "/test", "/run"]
+    allowed_side_effects: ["none"]
+    requires_confirmation: false
+  - name: "awf-gitnexus-context"
+    path: "skills/awf-gitnexus-context/SKILL.md"
+    category: "code_intelligence"
+    activation: "conditional"
+    priority: "medium"
+    risk_level: "low"
+    related_workflows: ["/code", "/debug", "/refactor", "/audit", "/rollback"]
+    allowed_side_effects: ["read_index"]
+    requires_confirmation: false
+  - name: "awf-idea-refine"
+    path: "skills/awf-idea-refine/SKILL.md"
+    category: "planning"
+    activation: "intent"
+    priority: "medium"
+    risk_level: "low"
+    related_workflows: ["/brainstorm", "/plan"]
+    allowed_side_effects: ["none"]
+    requires_confirmation: false
+  - name: "awf-note-taking"
+    path: "skills/awf-note-taking/SKILL.md"
+    category: "context"
+    activation: "explicit_or_confirmed"
+    priority: "low"
+    risk_level: "medium"
+    related_workflows: ["/save-brain", "/review", "/recap"]
+    allowed_side_effects: ["write_note_after_confirmation"]
+    requires_confirmation: true
+  - name: "awf-onboarding"
+    path: "skills/awf-onboarding/SKILL.md"
+    category: "startup"
+    activation: "automatic"
+    priority: "medium"
+    risk_level: "medium"
+    related_workflows: ["/init", "/help"]
+    allowed_side_effects: ["create_context_folder"]
+    requires_confirmation: false
+  - name: "awf-port-manager"
+    path: "skills/awf-port-manager/SKILL.md"
+    category: "operations"
+    activation: "conditional"
+    priority: "medium"
+    risk_level: "high"
+    related_workflows: ["/run", "/debug"]
+    allowed_side_effects: ["inspect_ports", "kill_process_after_confirmation"]
+    requires_confirmation: true
+  - name: "awf-proactive-evolution"
+    path: "skills/awf-proactive-evolution/SKILL.md"
+    category: "system"
+    activation: "advisory"
+    priority: "low"
+    risk_level: "low"
+    related_workflows: ["all"]
+    allowed_side_effects: ["suggestion_only"]
+    requires_confirmation: true
+  - name: "awf-red-teaming"
+    path: "skills/awf-red-teaming/SKILL.md"
+    category: "security"
+    activation: "conditional"
+    priority: "high"
+    risk_level: "medium"
+    related_workflows: ["/audit", "/deploy", "/plan"]
+    allowed_side_effects: ["generate_report"]
+    requires_confirmation: false
+  - name: "awf-research-agent"
+    path: "skills/awf-research-agent/SKILL.md"
+    category: "research"
+    activation: "conditional"
+    priority: "high"
+    risk_level: "medium"
+    related_workflows: ["/brainstorm", "/plan", "/script", "/fb-post"]
+    allowed_side_effects: ["web_research", "generate_report"]
+    requires_confirmation: false
+  - name: "awf-session-restore"
+    path: "skills/awf-session-restore/SKILL.md"
+    category: "context"
+    activation: "automatic"
+    priority: "high"
+    risk_level: "low"
+    related_workflows: ["/recap", "/next", "/help"]
+    allowed_side_effects: ["read_context"]
+    requires_confirmation: false
+  - name: "awf-shipping-launch"
+    path: "skills/awf-shipping-launch/SKILL.md"
+    category: "release"
+    activation: "conditional"
+    priority: "high"
+    risk_level: "high"
+    related_workflows: ["/deploy", "/rollback", "/audit"]
+    allowed_side_effects: ["release_plan"]
+    requires_confirmation: true
+  - name: "awf-spec-writer"
+    path: "skills/awf-spec-writer/SKILL.md"
+    category: "planning"
+    activation: "conditional"
+    priority: "high"
+    risk_level: "medium"
+    related_workflows: ["/plan", "/code"]
+    allowed_side_effects: ["write_spec_after_request"]
+    requires_confirmation: false
+  - name: "context-engineering"
+    path: "skills/context-engineering/SKILL.md"
+    category: "context"
+    activation: "conditional"
+    priority: "medium"
+    risk_level: "low"
+    related_workflows: ["/plan", "/code", "/review"]
+    allowed_side_effects: ["none"]
+    requires_confirmation: false
+  - name: "data-scraper-agent"
+    path: "skills/data-scraper-agent/SKILL.md"
+    category: "automation"
+    activation: "intent"
+    priority: "medium"
+    risk_level: "high"
+    related_workflows: ["/plan", "/code", "/audit"]
+    allowed_side_effects: ["network_requests", "code_generation"]
+    requires_confirmation: true
+  - name: "deployment-patterns"
+    path: "skills/deployment-patterns/SKILL.md"
+    category: "release"
+    activation: "conditional"
+    priority: "high"
+    risk_level: "high"
+    related_workflows: ["/deploy", "/audit"]
+    allowed_side_effects: ["release_plan", "config_change_after_request"]
+    requires_confirmation: true
+  - name: "design-system"
+    path: "skills/design-system/SKILL.md"
+    category: "ui_ux"
+    activation: "conditional"
+    priority: "medium"
+    risk_level: "medium"
+    related_workflows: ["/visualize", "/code", "/review"]
+    allowed_side_effects: ["generate_design_system"]
+    requires_confirmation: false
+  - name: "fb-publisher"
+    path: "skills/fb-publisher/SKILL.md"
+    category: "content_publish"
+    activation: "explicit"
+    priority: "medium"
+    risk_level: "critical"
+    related_workflows: ["/fb-post"]
+    allowed_side_effects: ["queue_content", "publish_after_confirmation"]
+    requires_confirmation: true
+  - name: "github-ops"
+    path: "skills/github-ops/SKILL.md"
+    category: "repo_ops"
+    activation: "explicit_or_intent"
+    priority: "medium"
+    risk_level: "high"
+    related_workflows: ["/deploy", "/review", "/audit"]
+    allowed_side_effects: ["github_api_after_confirmation"]
+    requires_confirmation: true
+  - name: "git-workflow"
+    path: "skills/git-workflow/SKILL.md"
+    category: "repo_ops"
+    activation: "conditional"
+    priority: "high"
+    risk_level: "medium"
+    related_workflows: ["/init", "/code", "/rollback", "/deploy"]
+    allowed_side_effects: ["git_commands_after_request"]
+    requires_confirmation: true
+  - name: "karpathy-coding-principles"
+    path: "skills/karpathy-coding-principles/SKILL.md"
+    category: "implementation"
+    activation: "automatic"
+    priority: "high"
+    risk_level: "low"
+    related_workflows: ["/code", "/debug", "/refactor", "/design", "/audit"]
+    allowed_side_effects: ["none"]
+    requires_confirmation: false
+  - name: "local-coccoc-control"
+    path: "skills/local-coccoc-control/SKILL.md"
+    category: "browser_control"
+    activation: "explicit_or_intent"
+    priority: "medium"
+    risk_level: "high"
+    related_workflows: ["/brainstorm", "/test", "/debug"]
+    allowed_side_effects: ["browser_control_after_confirmation"]
+    requires_confirmation: true
+  - name: "manim-video"
+    path: "skills/manim-video/SKILL.md"
+    category: "video"
+    activation: "conditional"
+    priority: "low"
+    risk_level: "medium"
+    related_workflows: ["/script"]
+    allowed_side_effects: ["generate_video_assets"]
+    requires_confirmation: false
+  - name: "performance-optimization"
+    path: "skills/performance-optimization/SKILL.md"
+    category: "quality"
+    activation: "conditional"
+    priority: "high"
+    risk_level: "medium"
+    related_workflows: ["/audit", "/refactor", "/code"]
+    allowed_side_effects: ["measure", "code_change_after_request"]
+    requires_confirmation: false
+  - name: "postgres-patterns"
+    path: "skills/postgres-patterns/SKILL.md"
+    category: "database"
+    activation: "conditional"
+    priority: "medium"
+    risk_level: "high"
+    related_workflows: ["/design", "/code", "/audit"]
+    allowed_side_effects: ["schema_plan", "migration_after_confirmation"]
+    requires_confirmation: true
+  - name: "prompt-optimizer"
+    path: "skills/prompt-optimizer/SKILL.md"
+    category: "prompting"
+    activation: "conditional"
+    priority: "medium"
+    risk_level: "low"
+    related_workflows: ["/plan", "/brainstorm"]
+    allowed_side_effects: ["none"]
+    requires_confirmation: false
+  - name: "psycho-content-engineer"
+    path: "skills/psycho-content-engineer/SKILL.md"
+    category: "content"
+    activation: "explicit_or_intent"
+    priority: "medium"
+    risk_level: "medium"
+    related_workflows: ["/fb-post", "/brainstorm"]
+    allowed_side_effects: ["draft_content"]
+    requires_confirmation: false
+  - name: "remotion-video-creation"
+    path: "skills/remotion-video-creation/SKILL.md"
+    category: "video"
+    activation: "conditional"
+    priority: "low"
+    risk_level: "medium"
+    related_workflows: ["/script", "/code"]
+    allowed_side_effects: ["code_generation_after_request"]
+    requires_confirmation: false
+  - name: "seo"
+    path: "skills/seo/SKILL.md"
+    category: "marketing"
+    activation: "conditional"
+    priority: "medium"
+    risk_level: "medium"
+    related_workflows: ["/audit", "/deploy", "/review"]
+    allowed_side_effects: ["generate_or_edit_seo_assets"]
+    requires_confirmation: false
+  - name: "squirrel-scriptwriter"
+    path: "skills/squirrel-scriptwriter/SKILL.md"
+    category: "content"
+    activation: "explicit_or_intent"
+    priority: "medium"
+    risk_level: "medium"
+    related_workflows: ["/script"]
+    allowed_side_effects: ["draft_content", "write_files_after_request"]
+    requires_confirmation: false
+  - name: "squirrel-video-director"
+    path: "skills/squirrel-video-director/SKILL.md"
+    category: "video"
+    activation: "explicit_or_intent"
+    priority: "low"
+    risk_level: "medium"
+    related_workflows: ["/script"]
+    allowed_side_effects: ["draft_prompts"]
+    requires_confirmation: false
+  - name: "tai-video"
+    path: "skills/tai-video/SKILL.md"
+    category: "media"
+    activation: "explicit_or_intent"
+    priority: "low"
+    risk_level: "high"
+    related_workflows: ["/script"]
+    allowed_side_effects: ["download_media_after_confirmation"]
+    requires_confirmation: true
+  - name: "timestamp-to-visual-prompt"
+    path: "skills/timestamp-to-visual-prompt/SKILL.md"
+    category: "video"
+    activation: "explicit_or_intent"
+    priority: "medium"
+    risk_level: "medium"
+    related_workflows: ["/script"]
+    allowed_side_effects: ["draft_prompts"]
+    requires_confirmation: false
+  - name: "ui-ux-pro-max"
+    path: "skills/ui-ux-pro-max/SKILL.md"
+    category: "ui_ux"
+    activation: "required_for_ui"
+    priority: "high"
+    risk_level: "medium"
+    related_workflows: ["/visualize", "/code", "/review"]
+    allowed_side_effects: ["generate_design_system", "write_design_system_after_request"]
+    requires_confirmation: false
+  - name: "webapp-testing"
+    path: "skills/webapp-testing/SKILL.md"
+    category: "quality"
+    activation: "conditional"
+    priority: "high"
+    risk_level: "medium"
+    related_workflows: ["/test", "/code", "/deploy", "/visualize"]
+    allowed_side_effects: ["run_browser_tests", "screenshots"]
+    requires_confirmation: false

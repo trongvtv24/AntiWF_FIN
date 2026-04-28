@@ -1,0 +1,6 @@
+{
+  "artifactType":  "ARTIFACT_TYPE_OTHER",
+  "summary":  "Báo cáo phân tích toàn diện hệ thống AntiGravity Workflows và Skills. Bao gồm: (1) Sơ đồ logic giữa 22 workflows và 42 skills, (2) Đánh giá hiệu suất với điểm mạnh/yếu cụ thể, (3) 7 vấn đề nghiêm trọng được phát hiện kèm ví dụ minh họa, (4) 9 gợi ý cải tiến chi tiết với diff code cụ thể, (5) Ma trận kết nối workflow-skill, (6) Đánh giá điểm anti-hallucination 7.3/10, (7) Top 5 ưu tiên cải tiến.",
+  "updatedAt":  "2026-04-28T03:08:45.051128100Z",
+  "requestFeedback":  true
+}

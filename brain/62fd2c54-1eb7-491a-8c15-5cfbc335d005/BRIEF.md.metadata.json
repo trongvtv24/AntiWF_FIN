@@ -1,0 +1,6 @@
+{
+  "artifactType":  "ARTIFACT_TYPE_OTHER",
+  "summary":  "Brief tổng hợp toàn bộ ý tưởng và kế hoạch cho YouTube Intelligence Desktop App (YT-Intel). Bao gồm: vấn đề cần giải quyết, tech stack (Python + Tauri), chiến lược YouTube API multi-key, danh sách tính năng chia theo 3 phase, format export transcript (.md/.txt), ước tính độ phức tạp, rủi ro và bước tiếp theo.",
+  "updatedAt":  "2026-04-24T22:22:28.122134400Z",
+  "requestFeedback":  true
+}

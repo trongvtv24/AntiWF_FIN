@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YT-Intel — Giao diện Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0F0F13;
+            --bg-surface: #1A1A24;
+            --bg-elevated: #22223A;
+            --accent-red: #FF2D55;
+            --accent-blue: #4F8EF7;
+            --accent-green: #34D399;
+            --accent-yellow: #FBBF24;
+            --text-primary: #F0F0F8;
+            --text-secondary: #9999B8;
+            --border: #2A2A40;
+            --sidebar-width: 240px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar */
+        aside {
+            width: var(--sidebar-width);
+            background-color: var(--bg-surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 24px 0;
+            z-index: 10;
+        }
+
+        .logo {
+            padding: 0 24px;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--text-primary);
+        }
+
+        .logo span {
+            color: var(--accent-red);
+        }
+
+        nav {
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background-color: var(--bg-elevated);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background-color: rgba(255, 45, 85, 0.1);
+            color: var(--text-primary);
+            border-left: 3px solid var(--accent-red);
+        }
+
+        /* Main Content */
+        main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+        }
+
+        header {
+            height: 64px;
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .search-bar {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 16px;
+            width: 400px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .badge {
+            background-color: var(--accent-red);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            position: absolute;
+            top: -5px;
+            right: -10px;
+        }
+
+        /* Views */
+        .view {
+            display: none;
+            padding: 32px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .view.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Dashboard Styles */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+            opacity: 0.3;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 12px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .stat-trend {
+            font-size: 12px;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .trend-up { color: var(--accent-green); }
+
+        .dashboard-main {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        .panel {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .video-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .video-item:last-child { border: none; }
+
+        .thumb-mini {
+            width: 100px;
+            height: 56px;
+            background-color: #333;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .video-info h4 {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .video-info p {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .vph {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .vph span {
+            display: block;
+            font-weight: 700;
+            color: var(--accent-red);
+        }
+
+        .vph label {
+            font-size: 10px;
+            color: var(--text-secondary);
+        }
+
+        .quota-item {
+            margin-bottom: 16px;
+        }
+
+        .quota-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background-color: var(--bg-elevated);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--accent-green);
+        }
+
+        /* Video Detail Styles */
+        .video-header {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .thumb-large {
+            width: 320px;
+            aspect-ratio: 16/9;
+            background-color: #222;
+            border-radius: 8px;
+        }
+
+        .video-meta h2 {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: 0.2s;
+        }
+
+        .btn-primary { background-color: var(--accent-red); color: white; }
+        .btn-secondary { background-color: var(--bg-elevated); color: var(--text-primary); }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            position: relative;
+        }
+
+        .tab.active {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; left: 0; width: 100%; height: 2px;
+            background-color: var(--accent-red);
+        }
+
+        .transcript-container {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .transcript-line {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .timestamp {
+            color: var(--accent-blue);
+            font-family: 'JetBrains Mono', monospace;
+            flex-shrink: 0;
+            width: 50px;
+        }
+
+        .content-text { line-height: 1.6; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--bg-elevated); }
+    </style>
+</head>
+<body>
+
+    <aside>
+        <div class="logo">
+            <span>YT</span>-Intel
+        </div>
+        <nav>
+            <div class="nav-item active" onclick="showView('dashboard', this)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                Dashboard
+            </div>
+            <div class="nav-item" onclick="showView('channels', this)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
+                Channels
+            </div>
+            <div class="nav-item" onclick="showView('video-detail', this)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20v-6M6 20V10M18 20V4"></path></svg>
+                Video Detail
+            </div>
+        </nav>
+        <div class="nav-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            Settings
+        </div>
+    </aside>
+
+    <main>
+        <header>
+            <input type="text" class="search-bar" placeholder="Tìm kiếm video, kịch bản hoặc kênh...">
+            <div class="header-actions">
+                <div style="position: relative; cursor: pointer;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    <span class="badge">3</span>
+                </div>
+                <div style="width: 32px; height: 32px; background: #FF2D55; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">T</div>
+            </div>
+        </header>
+
+        <!-- Dashboard View -->
+        <div id="dashboard" class="view active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Channels</div>
+                    <div class="stat-value">84</div>
+                    <div class="stat-trend trend-up">▲ 12% tháng này</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Videos</div>
+                    <div class="stat-value">5,231</div>
+                    <div class="stat-trend trend-up">▲ 450 video mới</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Avg. Engagement</div>
+                    <div class="stat-value">4.2%</div>
+                    <div class="stat-trend trend-up">▲ 0.8% tuần qua</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Transcripts</div>
+                    <div class="stat-value">1,204</div>
+                    <div class="stat-trend" style="color: var(--text-secondary);">23/50 kênh đã lấy</div>
+                </div>
+            </div>
+
+            <div class="dashboard-main">
+                <div class="panel">
+                    <div class="panel-title">
+                        🔥 Trending Videos (48h)
+                        <span style="font-size: 12px; color: var(--accent-blue); cursor: pointer;">Xem tất cả →</span>
+                    </div>
+                    <div class="video-item">
+                        <div class="thumb-mini" style="background: url('https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg') center/cover;"></div>
+                        <div class="video-info">
+                            <h4>iPhone 16 Pro Review — Is it worth it?</h4>
+                            <p>MKBHD • 1.2M views • 2 ngày trước</p>
+                        </div>
+                        <div class="vph">
+                            <span>2,400</span>
+                            <label>views/hr</label>
+                        </div>
+                    </div>
+                    <div class="video-item">
+                        <div class="thumb-mini" style="background: #222;"></div>
+                        <div class="video-info">
+                            <h4>Why you should stop learning Python...</h4>
+                            <p>Fireship • 850K views • 1 ngày trước</p>
+                        </div>
+                        <div class="vph">
+                            <span>1,850</span>
+                            <label>views/hr</label>
+                        </div>
+                    </div>
+                    <div class="video-item">
+                        <div class="thumb-mini" style="background: #222;"></div>
+                        <div class="video-info">
+                            <h4>How I built an AI Agent in 10 minutes</h4>
+                            <p>Joma Tech • 450K views • 18 giờ trước</p>
+                        </div>
+                        <div class="vph">
+                            <span>1,200</span>
+                            <label>views/hr</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-title">API Quota Status</div>
+                    <div class="quota-item">
+                        <div class="quota-header">
+                            <span>Key 1 (Main)</span>
+                            <span>7,200 / 10,000</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 72%;"></div>
+                        </div>
+                    </div>
+                    <div class="quota-item">
+                        <div class="quota-header">
+                            <span>Key 2 (Backup)</span>
+                            <span>9,500 / 10,000</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 95%;"></div>
+                        </div>
+                    </div>
+                    <div class="panel-title" style="margin-top: 32px; font-size: 14px;">🔔 Recent Alerts</div>
+                    <div style="font-size: 13px; line-height: 2;">
+                        <div style="color: var(--accent-red);">• Spike: MKBHD +340% view velocity</div>
+                        <div style="color: var(--text-primary);">• New: MrBeast vừa đăng video mới</div>
+                        <div style="color: var(--text-primary);">• Quota: Key 1 đã dùng 70%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Detail View -->
+        <div id="video-detail" class="view">
+            <div class="video-header">
+                <div class="thumb-large" style="background: url('https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg') center/cover;"></div>
+                <div class="video-meta">
+                    <h2>iPhone 16 Pro Review — Is it worth it?</h2>
+                    <p style="color: var(--text-secondary);">MKBHD • 1,245,302 views • Jan 15, 2024 • 14:32</p>
+                    <div class="btn-group">
+                        <button class="btn btn-primary">Refresh Data</button>
+                        <button class="btn btn-secondary">Mở trên YouTube ↗</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-grid" style="grid-template-columns: repeat(5, 1fr);">
+                <div class="stat-card" style="padding: 12px;">
+                    <div class="stat-label">Views</div>
+                    <div class="stat-value" style="font-size: 20px;">1.24M</div>
+                </div>
+                <div class="stat-card" style="padding: 12px;">
+                    <div class="stat-label">Likes</div>
+                    <div class="stat-value" style="font-size: 20px;">48.5K</div>
+                </div>
+                <div class="stat-card" style="padding: 12px;">
+                    <div class="stat-label">Comments</div>
+                    <div class="stat-value" style="font-size: 20px;">3,202</div>
+                </div>
+                <div class="stat-card" style="padding: 12px;">
+                    <div class="stat-label">Engagement</div>
+                    <div class="stat-value" style="font-size: 20px; color: var(--accent-green);">4.14%</div>
+                </div>
+                <div class="stat-card" style="padding: 12px;">
+                    <div class="stat-label">Views/hr</div>
+                    <div class="stat-value" style="font-size: 20px; color: var(--accent-red);">2,400</div>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <div class="tab active">Kịch bản (Transcript)</div>
+                <div class="tab">Bình luận (Comments)</div>
+                <div class="tab">Ghi chú AI</div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <div style="font-size: 14px; color: var(--text-secondary);">Ngôn ngữ: 🇻🇳 Tiếng Việt (Tự động)</div>
+                <button class="btn btn-secondary" style="font-size: 12px;">Export (.md)</button>
+            </div>
+
+            <div class="transcript-container">
+                <div class="transcript-line">
+                    <div class="timestamp">00:00</div>
+                    <div class="content-text">Chào mừng các bạn đã quay trở lại với MKBHD. Đây là chiếc iPhone 16 Pro.</div>
+                </div>
+                <div class="transcript-line">
+                    <div class="timestamp">00:15</div>
+                    <div class="content-text">Năm nay Apple đã mang đến một vài thay đổi nhỏ nhưng cực kỳ quan trọng về camera và màn hình.</div>
+                </div>
+                <div class="transcript-line">
+                    <div class="timestamp">01:30</div>
+                    <div class="content-text">Điểm đầu tiên tôi muốn nói tới là nút Camera Control mới. Nó không chỉ là một nút bấm bình thường.</div>
+                </div>
+                <div class="transcript-line">
+                    <div class="timestamp">02:45</div>
+                    <div class="content-text">Tuy nhiên, liệu nó có xứng đáng để bạn nâng cấp từ iPhone 15 Pro không? Hãy cùng phân tích kỹ hơn.</div>
+                </div>
+                <div class="transcript-line">
+                    <div class="timestamp">04:00</div>
+                    <div class="content-text">Màn hình năm nay to hơn một chút, viền mỏng hơn rất nhiều. Cảm giác cầm nắm vẫn rất tuyệt vời.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Channels View (Placeholder) -->
+        <div id="channels" class="view">
+            <h2>Watchlist Channels (84)</h2>
+            <p style="color: var(--text-secondary); margin-top: 16px;">Chức năng quản lý danh sách kênh đang được phát triển...</p>
+        </div>
+    </main>
+
+    <script>
+        function showView(viewId, el) {
+            // Update Sidebar
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            el.classList.add('active');
+
+            // Update Views
+            document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+        }
+    </script>
+</body>
+</html>
