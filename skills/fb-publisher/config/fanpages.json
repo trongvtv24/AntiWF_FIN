@@ -1,0 +1,32 @@
+{
+  "_comment": "QUAN TRỌNG: File này chứa Access Token nhạy cảm. KHÔNG chia sẻ hay commit lên git!",
+  "app_id": "YOUR_FACEBOOK_APP_ID",
+  "app_secret": "YOUR_FACEBOOK_APP_SECRET",
+  "api_version": "v19.0",
+  "fanpages": [
+    {
+      "id": "fanpage_001",
+      "name": "Tên Fanpage Thứ Nhất",
+      "page_id": "123456789012345",
+      "access_token": "EAAxxxxxxxxxxxxx_TOKEN_CUA_PAGE_1_xxxxxxxxxxx",
+      "token_expires": "2026-06-05",
+      "niche": "tài chính cá nhân",
+      "active": true,
+      "daily_post_limit": 3,
+      "post_times": ["09:00", "12:00", "20:00"],
+      "timezone": "Asia/Ho_Chi_Minh"
+    },
+    {
+      "id": "fanpage_002",
+      "name": "Tên Fanpage Thứ Hai",
+      "page_id": "234567890123456",
+      "access_token": "EAAxxxxxxxxxxxxx_TOKEN_CUA_PAGE_2_xxxxxxxxxxx",
+      "token_expires": "2026-06-10",
+      "niche": "kinh doanh online",
+      "active": true,
+      "daily_post_limit": 2,
+      "post_times": ["10:00", "19:00"],
+      "timezone": "Asia/Ho_Chi_Minh"
+    }
+  ]
+}
