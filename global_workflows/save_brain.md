@@ -5,7 +5,7 @@ type: workflow
 name: "save_brain"
 command: "/save-brain"
 awf_version: "4.0.0"
-workflow_version: "2.0.0"
+workflow_version: "4.0.0"
 status: active
 category: "context"
 risk_level: "medium"
@@ -60,6 +60,7 @@ Bạn là **Antigravity Librarian**. Nhiệm vụ: Chống lại "Context Drift"
 | `.brain/handover.md` | Khi context dài, user nghỉ, hoặc chuẩn bị chuyển session |
 | `.brain/decisions.md` | Quyết định quan trọng và rationale |
 | `.brain/claims.md` | Claim, assumption, số liệu, hoặc điểm cần kiểm chứng |
+| `.brain/preferences.json` | Tuỳ chỉnh giao tiếp/cách làm việc local của project |
 
 **Không được lưu assumption vào `brain.json` như fact.** Claim chưa kiểm chứng phải vào `claims.md`.
 
@@ -417,6 +418,10 @@ Khi có API mới, tự động append vào file docs hiện có.
 .brain/                            # LOCAL (per-project)
 ├── brain.json                     # 🧠 Static knowledge (ít thay đổi)
 ├── session.json                   # 📍 Dynamic session (thay đổi liên tục)
+├── session_log.txt                # 🪶 Append-only checkpoints
+├── handover.md                    # 📋 Tài liệu bàn giao session
+├── decisions.md                   # 🧭 Decision log append-only
+├── claims.md                      # 🛡️ Claim/assumption ledger
 └── preferences.json               # ⚙️ Local override (nếu khác global)
 
 ~/.gemini/antigravity/             # GLOBAL (tất cả dự án)
@@ -435,8 +440,13 @@ Chứa thông tin ít thay đổi:
 
 ```json
 {
-  "meta": { "schema_version": "1.1.0", "awf_version": "3.3.0" },
-  "project": { "name": "...", "type": "...", "status": "..." },
+  "meta": {
+    "schema_version": "4.0.0",
+    "awf_version": "4.0.0",
+    "created_at": "...",
+    "updated_at": "..."
+  },
+  "project": { "name": "...", "type": "...", "status": "...", "source": "repo_observed" },
   "tech_stack": { "frontend": {...}, "backend": {...}, "database": {...} },
   "database_schema": { "tables": [...], "relationships": [...] },
   "api_endpoints": [...],
@@ -452,7 +462,23 @@ Chứa thông tin thay đổi liên tục:
 
 ```json
 {
-  "updated_at": "2026-01-17T18:30:00Z",
+  "meta": {
+    "schema_version": "4.0.0",
+    "awf_version": "4.0.0",
+    "created_at": "2026-04-29T00:00:00+07:00",
+    "updated_at": "2026-04-29T00:00:00+07:00"
+  },
+  "updated_at": "2026-04-29T00:00:00+07:00",
+  "summary": {
+    "project": "Project Name",
+    "current_feature": "Revenue Reports",
+    "current_task": "Implement daily revenue chart",
+    "status": "coding",
+    "progress_percent": 65,
+    "last_action": "Added revenue API endpoint",
+    "next_step": "Wire chart component",
+    "blockers_count": 0
+  },
   "working_on": {
     "feature": "Revenue Reports",
     "task": "Implement daily revenue chart",
@@ -470,9 +496,9 @@ Chứa thông tin thay đổi liên tục:
   "errors_encountered": [
     { "error": "...", "solution": "...", "resolved": true }
   ],
-  "decisions_made": [
-    { "decision": "Use recharts", "reason": "Better React integration" }
-  ]
+  "decision_refs": ["2026-04-29-use-recharts"],
+  "claim_refs": [],
+  "handover_required": false
 }
 ```
 
@@ -503,15 +529,19 @@ Chứa thông tin thay đổi liên tục:
 - Files đã modified → recent_changes
 - Task đang làm → working_on
 - Errors gặp phải → errors_encountered
-- Quyết định đã lấy → decisions_made
+- Quyết định đã lấy → append vào `decisions.md`, lưu pointer trong `session.json` → `decision_refs`
+- Claim/assumption chưa kiểm chứng → append vào `claims.md`, lưu pointer trong `session.json` → `claim_refs`
 
 **Bước 3: Validate**
 - Schema: `schemas/brain.schema.json`, `schemas/session.schema.json`
+- Nếu có update preferences: validate thêm `schemas/preferences.schema.json`
 - Đảm bảo JSON hợp lệ trước khi save
 
 **Bước 4: Save**
 - `.brain/brain.json` - add vào `.gitignore` hoặc commit nếu team share
 - `.brain/session.json` - luôn trong `.gitignore` (local state)
+- `.brain/session_log.txt` - append checkpoint, không rewrite lịch sử
+- `.brain/decisions.md` và `.brain/claims.md` - append-only, không silently xoá dòng cũ
 
 ---
 

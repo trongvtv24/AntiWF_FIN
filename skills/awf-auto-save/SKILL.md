@@ -28,19 +28,20 @@ required_gates:
 # AWF_METADATA_END
 ---
 
-# AWF Auto-Save (Eternal Context)
+# AWF Auto-Save (Eternal Context v4.0)
 
-Tu dong luu session de khong bao gio mat context.
+Tự động lưu checkpoint nhẹ để không mất ngữ cảnh giữa các workflow hoặc session.
 
 ## Context System Boundary (AWF 4.0)
 
 Skill này tuân thủ `global_workflows/CONTEXT_SYSTEM.md`.
 
 - Được append checkpoint nhẹ vào `.brain/session_log.txt`.
-- Được update các field hẹp trong `.brain/session.json`: `working_on`, `pending_tasks`, `recent_changes`, `skipped_tests`, `handover_required`.
+- Được update các field hẹp trong `.brain/session.json`: `summary`, `working_on`, `current_plan_path`, `current_phase`, `pending_tasks`, `recent_changes`, `errors_encountered`, `skipped_tests`, `last_run`, `handover_required`.
 - Không được tự ghi `brain.json` trừ khi `/save-brain` đang chạy.
-- Không được tự ghi note/ADR bền vững; việc đó thuộc `/save-brain` hoặc `awf-note-taking` sau khi user xác nhận.
+- Không được tự ghi note/ADR/decision bền vững; việc đó thuộc `/save-brain` hoặc `awf-note-taking` sau khi user xác nhận.
 - Claim chưa kiểm chứng phải đi vào `.brain/claims.md` thông qua `/save-brain`, không được ghi thành project fact.
+- Nếu cần ghi decision/claim, auto-save chỉ được lưu pointer ngắn trong `decision_refs` hoặc `claim_refs` sau khi durable log đã tồn tại.
 
 ## Trigger Conditions
 
@@ -56,19 +57,19 @@ Sau khi hoan thanh bat ky workflow nao:
 Pattern matching trong tin nhan user:
 ```
 patterns:
-  - "bye", "tam biet", "tam nghi"
-  - "toi di", "di an com", "nghi thoi"
-  - "het gio", "mai lam tiep", "save"
-  - "dong app", "tat may"
+  - "bye", "tạm biệt", "tam biet", "tạm nghỉ", "tam nghi"
+  - "tôi đi", "toi di", "đi ăn cơm", "di an com", "nghỉ thôi", "nghi thoi"
+  - "hết giờ", "het gio", "mai làm tiếp", "mai lam tiep", "save"
+  - "đóng app", "dong app", "tắt máy", "tat may"
 ```
 
 ### 3. Decision Made Detection
 Khi user dua ra quyet dinh:
 ```
 patterns:
-  - "chon phuong an", "dung cai nay"
-  - "ok", "dong y", "lam vay"
-  - "quyet dinh la", "se dung"
+  - "chọn phương án", "chon phuong an", "dùng cái này", "dung cai nay"
+  - "ok", "đồng ý", "dong y", "làm vậy", "lam vay"
+  - "quyết định là", "quyet dinh la", "sẽ dùng", "se dung"
 ```
 
 ### 4. Periodic Checkpoint
@@ -108,13 +109,14 @@ on_message(user_input):
 
 ```
 summary = {
-    project: brain.project.name,
-    current_feature: session.working_on.feature,
-    current_task: session.working_on.task,
-    status: session.working_on.status,
-    progress_percent: calculate_progress(),
-    last_action: get_last_action(),
-    next_step: suggest_next_step()
+    "project": brain.project.name,
+    "current_feature": session.working_on.feature,
+    "current_task": session.working_on.task,
+    "status": session.working_on.status,
+    "progress_percent": calculate_progress(),
+    "last_action": get_last_action(),
+    "next_step": suggest_next_step(),
+    "blockers_count": count_blockers()
 }
 ```
 
@@ -124,10 +126,13 @@ summary = {
 append_to_file(".brain/session_log.txt", {
     timestamp: now(),
     trigger: trigger_type,
+    workflow: active_workflow,
     summary: compress_summary(summary),
-    message_count: current_count
+    message_count: current_count,
+    files: changed_files
 })
 
+session.summary = merge_summary(session.summary, summary)
 session.working_on = merge_narrow_progress(session.working_on, summary)
 session.handover_required = trigger_type == "emergency"
 save_only_allowed_fields(".brain/session.json")
@@ -213,7 +218,7 @@ emergency_save:
 
 ## Integration with Workflows
 
-Moi workflow PHAI goi auto-save khi ket thuc:
+Mọi workflow nên gọi auto-save khi kết thúc nếu có thay đổi đáng ghi nhớ:
 
 ```markdown
 # Cuoi moi workflow.md:
@@ -222,8 +227,9 @@ Moi workflow PHAI goi auto-save khi ket thuc:
 
 Sau khi hoan thanh workflow:
 1. Cap nhat session.summary
-2. Append vao context_checkpoints
-3. Hien thong bao: "💾 Da luu tien do."
+2. Append checkpoint vao `.brain/session_log.txt`
+3. Update field hẹp trong `.brain/session.json`
+4. Hien thong bao nếu `notify_on_save=true`: "💾 Da luu tien do."
 ```
 
 ## Config Options

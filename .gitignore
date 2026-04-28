@@ -1,0 +1,40 @@
+# IDE and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# User-specific workflow generation and cache
+brain/
+browser_recordings/
+artifacts/
+tmp/
+scratch/
+code_tracker/
+context_state/
+html_artifacts/
+playground/
+.tempmediaStorage/
+*.bak
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+build/
+.next/
+.nuxt/
+coverage/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+secrets/

@@ -1,9 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://awf.dev/schemas/brain.schema.json",
-  "title": "AWF Brain Context Schema",
-  "description": "Static project knowledge - tech stack, DB schema, APIs, features. Session state moved to session.json",
-  "version": "1.1.0",
+  "title": "AWF v4 Brain Context Schema",
+  "description": "Stable project knowledge only. Temporary session state, decisions, and unverified claims live outside brain.json.",
+  "version": "4.0.0",
   "type": "object",
   "required": ["meta", "project", "updated_at"],
   "properties": {
@@ -11,12 +11,12 @@
       "type": "object",
       "description": "Schema metadata",
       "properties": {
-        "schema_version": { "type": "string", "default": "1.0.0" },
+        "schema_version": { "type": "string", "default": "4.0.0" },
         "awf_version": { "type": "string" },
         "created_at": { "type": "string", "format": "date-time" },
         "updated_at": { "type": "string", "format": "date-time" }
       },
-      "required": ["schema_version", "awf_version"]
+      "required": ["schema_version", "awf_version", "created_at", "updated_at"]
     },
     "project": {
       "type": "object",
@@ -24,6 +24,11 @@
       "properties": {
         "name": { "type": "string" },
         "description": { "type": "string" },
+        "source": {
+          "type": "string",
+          "enum": ["repo_observed", "user_confirmed", "mixed"],
+          "description": "Where the project facts came from"
+        },
         "type": {
           "type": "string",
           "enum": ["website", "webapp", "api", "fullstack", "mobile"]
@@ -42,7 +47,7 @@
           }
         }
       },
-      "required": ["name", "type"]
+      "required": ["name", "type", "status"]
     },
     "tech_stack": {
       "type": "object",
@@ -90,7 +95,8 @@
             "properties": {
               "name": { "type": "string" },
               "version": { "type": "string" },
-              "purpose": { "type": "string" }
+              "purpose": { "type": "string" },
+              "source": { "type": "string", "description": "Observed file or user confirmation" }
             }
           }
         }
@@ -112,7 +118,8 @@
               "name": { "type": "string" },
               "path": { "type": "string" },
               "responsibility": { "type": "string" },
-              "dependencies": { "type": "array", "items": { "type": "string" } }
+              "dependencies": { "type": "array", "items": { "type": "string" } },
+              "source": { "type": "string" }
             }
           }
         },
@@ -123,7 +130,8 @@
             "properties": {
               "name": { "type": "string" },
               "purpose": { "type": "string" },
-              "env_vars": { "type": "array", "items": { "type": "string" } }
+              "env_vars": { "type": "array", "items": { "type": "string" } },
+              "source": { "type": "string" }
             }
           }
         }
@@ -156,6 +164,14 @@
             }
           }
         },
+        "summary": {
+          "type": "string",
+          "description": "Plain-language summary of what the database stores"
+        },
+        "relationships_explained": {
+          "type": "string",
+          "description": "Plain-language explanation of important relationships"
+        },
         "relationships": {
           "type": "array",
           "items": {
@@ -179,10 +195,12 @@
           "method": { "type": "string", "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"] },
           "path": { "type": "string" },
           "description": { "type": "string" },
+          "explained": { "type": "string", "description": "Plain-language explanation for non-technical users" },
           "auth_required": { "type": "boolean" },
           "roles": { "type": "array", "items": { "type": "string" } },
           "request_body": { "type": "object" },
-          "response": { "type": "object" }
+          "response": { "type": "object" },
+          "source": { "type": "string" }
         }
       }
     },
@@ -196,7 +214,8 @@
           "domain": { "type": "string" },
           "rule": { "type": "string" },
           "implementation": { "type": "string" },
-          "exceptions": { "type": "array", "items": { "type": "string" } }
+          "exceptions": { "type": "array", "items": { "type": "string" } },
+          "source": { "type": "string" }
         }
       }
     },
@@ -213,7 +232,8 @@
           },
           "spec_file": { "type": ["string", "null"] },
           "files": { "type": "array", "items": { "type": "string" } },
-          "notes": { "type": "string" }
+          "notes": { "type": "string" },
+          "source": { "type": "string" }
         }
       }
     },
@@ -273,7 +293,8 @@
               "name": { "type": "string" },
               "description": { "type": "string" },
               "required": { "type": "boolean" },
-              "example": { "type": "string" }
+              "example": { "type": "string" },
+              "secret": { "type": "boolean", "description": "True when the value must never be stored in brain.json" }
             }
           }
         },

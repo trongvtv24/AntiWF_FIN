@@ -1,5 +1,12 @@
 {
-  "updated_at": "2026-01-17T18:30:00Z",
+  "meta": {
+    "schema_version": "4.0.0",
+    "awf_version": "4.0.0",
+    "created_at": "2026-04-29T00:00:00+07:00",
+    "updated_at": "2026-04-29T00:00:00+07:00"
+  },
+  "updated_at": "2026-04-29T00:00:00+07:00",
+  "message_count": 12,
   "summary": {
     "project": "coffee-shop-manager",
     "current_feature": "Revenue Reports",
@@ -21,43 +28,53 @@
     "blockers": [],
     "notes": "Using recharts for visualization"
   },
+  "current_plan_path": "docs/specs/revenue-reports.md",
+  "current_phase": "phase-03-ui",
   "pending_tasks": [
     {
       "task": "Add date range filter to revenue chart",
       "priority": "medium",
+      "workflow": "/code",
       "notes": "User request from demo"
     },
     {
       "task": "Fix timezone issue in report",
       "priority": "high",
-      "notes": "Report shows UTC, need GMT+7"
+      "workflow": "/debug",
+      "notes": "Report shows UTC, needs GMT+7"
     }
   ],
   "recent_changes": [
     {
-      "timestamp": "2026-01-17T15:00:00Z",
+      "timestamp": "2026-04-29T09:00:00+07:00",
       "type": "feature",
       "description": "Added revenue API endpoint",
       "files": ["src/features/reports/api/get-revenue.ts"]
-    },
-    {
-      "timestamp": "2026-01-16T10:00:00Z",
-      "type": "bugfix",
-      "description": "Fixed order total calculation",
-      "files": ["src/features/orders/utils/calculate-total.ts"]
     }
   ],
   "errors_encountered": [
     {
       "error": "Prisma client not found in production",
-      "solution": "Add 'prisma generate' to postinstall script",
-      "resolved": true
+      "solution": "Add prisma generate to postinstall script",
+      "resolved": true,
+      "source": "build log"
     }
   ],
-  "decisions_made": [
-    {
-      "decision": "Use recharts instead of Chart.js",
-      "reason": "Better React integration, smaller bundle size"
-    }
-  ]
+  "skipped_tests": [],
+  "decision_refs": ["2026-04-29-use-recharts"],
+  "claim_refs": [],
+  "last_run": {
+    "command": "npm test",
+    "status": "passed",
+    "timestamp": "2026-04-29T10:00:00+07:00",
+    "notes": "Unit tests only; E2E not run"
+  },
+  "handover_required": false,
+  "auto_save_config": {
+    "enabled": true,
+    "notify_on_save": true,
+    "checkpoint_interval": 15,
+    "warn_threshold": 80,
+    "snapshot_retention_days": 7
+  }
 }

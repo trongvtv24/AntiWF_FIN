@@ -1,20 +1,21 @@
 {
   "meta": {
-    "schema_version": "1.1.0",
-    "awf_version": "3.4.0",
-    "created_at": "2026-01-15T09:00:00Z",
-    "updated_at": "2026-01-17T18:30:00Z"
+    "schema_version": "4.0.0",
+    "awf_version": "4.0.0",
+    "created_at": "2026-04-29T00:00:00+07:00",
+    "updated_at": "2026-04-29T00:00:00+07:00"
   },
   "project": {
     "name": "coffee-shop-manager",
-    "description": "Quản lý tiệm cà phê - đơn hàng, nhân viên, doanh thu",
+    "description": "Quản lý tiệm cà phê: đơn hàng, nhân viên, doanh thu",
     "type": "fullstack",
     "status": "development",
+    "source": "mixed",
     "repository": "https://github.com/user/coffee-shop-manager",
     "urls": {
       "local": "http://localhost:3000",
-      "staging": "https://staging.coffee-shop.com",
-      "production": "https://coffee-shop.com"
+      "staging": "https://staging.coffee-shop.example",
+      "production": "https://coffee-shop.example"
     }
   },
   "tech_stack": {
@@ -41,10 +42,18 @@
       "ci_cd": "GitHub Actions"
     },
     "dependencies": [
-      { "name": "next-auth", "version": "^5.0.0", "purpose": "Authentication" },
-      { "name": "react-hook-form", "version": "^7.0.0", "purpose": "Form handling" },
-      { "name": "recharts", "version": "^2.0.0", "purpose": "Dashboard charts" },
-      { "name": "zod", "version": "^3.0.0", "purpose": "Validation" }
+      {
+        "name": "next-auth",
+        "version": "^5.0.0",
+        "purpose": "Authentication",
+        "source": "package.json"
+      },
+      {
+        "name": "recharts",
+        "version": "^2.0.0",
+        "purpose": "Dashboard charts",
+        "source": "package.json"
+      }
     ]
   },
   "architecture": {
@@ -53,234 +62,131 @@
       {
         "name": "auth",
         "path": "src/features/auth",
-        "responsibility": "Authentication & authorization",
-        "dependencies": ["next-auth", "prisma"]
+        "responsibility": "Authentication and authorization",
+        "dependencies": ["next-auth", "prisma"],
+        "source": "repo_observed"
       },
       {
         "name": "orders",
         "path": "src/features/orders",
         "responsibility": "Order management CRUD",
-        "dependencies": ["prisma", "zustand"]
-      },
-      {
-        "name": "menu",
-        "path": "src/features/menu",
-        "responsibility": "Menu items & categories",
-        "dependencies": ["prisma"]
-      },
-      {
-        "name": "reports",
-        "path": "src/features/reports",
-        "responsibility": "Revenue & analytics",
-        "dependencies": ["prisma", "recharts"]
+        "dependencies": ["prisma", "zustand"],
+        "source": "repo_observed"
       }
     ],
     "external_services": [
       {
-        "name": "VNPay",
-        "purpose": "Payment processing",
-        "env_vars": ["VNPAY_TMN_CODE", "VNPAY_HASH_SECRET"]
-      },
-      {
         "name": "Resend",
         "purpose": "Email notifications",
-        "env_vars": ["RESEND_API_KEY"]
+        "env_vars": ["RESEND_API_KEY"],
+        "source": "user_confirmed"
       }
     ]
   },
   "database_schema": {
+    "summary": "App lưu thông tin user, đơn hàng, sản phẩm và báo cáo doanh thu.",
     "tables": [
       {
         "name": "users",
-        "description": "Nhân viên & Admin",
+        "description": "Nhân viên và admin",
         "columns": [
-          { "name": "id", "type": "uuid", "primary": true },
+          { "name": "id", "type": "uuid", "primary": true, "nullable": false },
           { "name": "email", "type": "string", "nullable": false },
-          { "name": "name", "type": "string", "nullable": false },
-          { "name": "role", "type": "enum(ADMIN,STAFF)", "nullable": false },
-          { "name": "created_at", "type": "datetime", "nullable": false }
+          { "name": "role", "type": "enum(ADMIN,STAFF)", "nullable": false }
         ]
       },
       {
         "name": "orders",
         "description": "Đơn hàng",
         "columns": [
-          { "name": "id", "type": "uuid", "primary": true },
-          { "name": "user_id", "type": "uuid", "foreign_key": "users.id" },
-          { "name": "total", "type": "decimal", "nullable": false },
-          { "name": "status", "type": "enum(PENDING,COMPLETED,CANCELLED)", "nullable": false },
-          { "name": "created_at", "type": "datetime", "nullable": false }
-        ]
-      },
-      {
-        "name": "order_items",
-        "description": "Chi tiết đơn hàng",
-        "columns": [
-          { "name": "id", "type": "uuid", "primary": true },
-          { "name": "order_id", "type": "uuid", "foreign_key": "orders.id" },
-          { "name": "menu_item_id", "type": "uuid", "foreign_key": "menu_items.id" },
-          { "name": "quantity", "type": "int", "nullable": false },
-          { "name": "price", "type": "decimal", "nullable": false }
-        ]
-      },
-      {
-        "name": "menu_items",
-        "description": "Món trong menu",
-        "columns": [
-          { "name": "id", "type": "uuid", "primary": true },
-          { "name": "name", "type": "string", "nullable": false },
-          { "name": "price", "type": "decimal", "nullable": false },
-          { "name": "category", "type": "string", "nullable": false },
-          { "name": "available", "type": "boolean", "nullable": false }
+          { "name": "id", "type": "uuid", "primary": true, "nullable": false },
+          { "name": "user_id", "type": "uuid", "foreign_key": "users.id", "nullable": false },
+          { "name": "total", "type": "decimal", "nullable": false }
         ]
       }
     ],
     "relationships": [
-      { "from": "orders", "to": "users", "type": "many-to-one", "description": "Mỗi order thuộc 1 user" },
-      { "from": "order_items", "to": "orders", "type": "many-to-one", "description": "Mỗi order có nhiều items" },
-      { "from": "order_items", "to": "menu_items", "type": "many-to-one", "description": "Mỗi item tham chiếu 1 menu item" }
-    ]
+      {
+        "from": "orders",
+        "to": "users",
+        "type": "many-to-one",
+        "description": "Mỗi order thuộc về một user"
+      }
+    ],
+    "relationships_explained": "Một nhân viên có thể tạo nhiều đơn hàng; mỗi đơn hàng thuộc về đúng một nhân viên."
   },
   "api_endpoints": [
     {
       "method": "POST",
       "path": "/api/auth/login",
       "description": "Đăng nhập",
+      "explained": "Gửi email và mật khẩu, nhận lại phiên đăng nhập.",
       "auth_required": false,
       "request_body": { "email": "string", "password": "string" },
-      "response": { "token": "string", "user": "object" }
-    },
-    {
-      "method": "GET",
-      "path": "/api/orders",
-      "description": "Lấy danh sách orders",
-      "auth_required": true,
-      "roles": ["ADMIN", "STAFF"],
-      "response": { "orders": "array", "total": "number", "page": "number" }
-    },
-    {
-      "method": "POST",
-      "path": "/api/orders",
-      "description": "Tạo order mới",
-      "auth_required": true,
-      "roles": ["STAFF"],
-      "request_body": { "items": "array", "note": "string?" }
-    },
-    {
-      "method": "GET",
-      "path": "/api/reports/revenue",
-      "description": "Báo cáo doanh thu",
-      "auth_required": true,
-      "roles": ["ADMIN"],
-      "response": { "daily": "array", "total": "number" }
+      "response": { "user": "object" },
+      "source": "src/app/api/auth/login/route.ts"
     }
   ],
   "business_rules": [
     {
       "id": "BR001",
       "domain": "orders",
-      "rule": "Đơn hàng > 500,000 VND được giảm 5%",
+      "rule": "Đơn hàng lớn hơn 500,000 VND được giảm 5%.",
       "implementation": "src/features/orders/utils/calculate-discount.ts",
-      "exceptions": ["Không áp dụng cho combo"]
-    },
-    {
-      "id": "BR002",
-      "domain": "orders",
-      "rule": "Không thể hủy đơn đã COMPLETED",
-      "implementation": "src/features/orders/actions/cancel-order.ts",
-      "exceptions": ["Admin có thể override"]
-    },
-    {
-      "id": "BR003",
-      "domain": "menu",
-      "rule": "Món hết hàng tự động ẩn khỏi menu",
-      "implementation": "src/features/menu/hooks/use-available-items.ts",
-      "exceptions": []
+      "exceptions": ["Không áp dụng cho combo"],
+      "source": "user_confirmed"
     }
   ],
   "features": [
     {
       "name": "Authentication",
-      "status": "deployed",
+      "status": "implemented",
       "spec_file": "docs/specs/auth_spec.md",
       "files": ["src/features/auth/**"],
-      "notes": "NextAuth v5 với Credentials provider"
-    },
-    {
-      "name": "Order Management",
-      "status": "implemented",
-      "spec_file": "docs/specs/orders_spec.md",
-      "files": ["src/features/orders/**"],
-      "notes": "CRUD hoàn chỉnh, đang test"
-    },
-    {
-      "name": "Revenue Reports",
-      "status": "in_progress",
-      "spec_file": "docs/specs/reports_spec.md",
-      "files": ["src/features/reports/**"],
-      "notes": "Đang làm chart daily revenue"
-    },
-    {
-      "name": "VNPay Integration",
-      "status": "planned",
-      "spec_file": null,
-      "files": [],
-      "notes": "Phase 2"
+      "notes": "Credentials provider",
+      "source": "repo_observed"
     }
   ],
   "knowledge_items": {
     "patterns": [
       {
         "name": "Server Actions",
-        "description": "Dùng Next.js Server Actions cho mutations",
+        "description": "Dùng Next.js Server Actions cho mutations.",
         "example_file": "src/features/orders/actions/create-order.ts"
-      },
-      {
-        "name": "Optimistic Updates",
-        "description": "Zustand + optimistic UI cho UX mượt",
-        "example_file": "src/features/orders/stores/order-store.ts"
       }
     ],
     "gotchas": [
       {
         "issue": "Prisma client not found in production",
-        "cause": "Vercel cần generate prisma client trong build",
-        "solution": "Thêm 'prisma generate' vào postinstall script",
+        "cause": "Vercel cần generate Prisma client trong build.",
+        "solution": "Thêm prisma generate vào postinstall script.",
         "affected_files": ["package.json"]
-      },
-      {
-        "issue": "NextAuth session null trên API routes",
-        "cause": "Cần wrap với auth() helper",
-        "solution": "Import auth từ @/lib/auth thay vì getServerSession",
-        "affected_files": ["src/features/*/api/*.ts"]
       }
     ],
     "conventions": [
       {
         "area": "file naming",
-        "convention": "kebab-case cho files, PascalCase cho components",
+        "convention": "kebab-case cho files, PascalCase cho components.",
         "example": "revenue-chart.tsx exports RevenueChart"
-      },
-      {
-        "area": "API responses",
-        "convention": "Luôn wrap trong { data, error, message }",
-        "example": "return { data: orders, error: null, message: 'Success' }"
       }
     ]
   },
   "environment": {
     "variables": [
-      { "name": "DATABASE_URL", "description": "PostgreSQL connection string", "required": true, "example": "postgresql://user:pass@localhost:5432/db" },
-      { "name": "NEXTAUTH_SECRET", "description": "Secret for JWT signing", "required": true, "example": "random-32-char-string" },
-      { "name": "NEXTAUTH_URL", "description": "App URL for auth callbacks", "required": true, "example": "http://localhost:3000" },
-      { "name": "RESEND_API_KEY", "description": "Resend email API key", "required": false, "example": "re_xxxxx" }
+      {
+        "name": "DATABASE_URL",
+        "description": "PostgreSQL connection string",
+        "required": true,
+        "example": "postgresql://user:pass@localhost:5432/db",
+        "secret": true
+      }
     ],
     "scripts": {
       "dev": "next dev",
       "build": "prisma generate && next build",
       "test": "vitest",
-      "lint": "eslint . --fix"
+      "lint": "eslint ."
     }
   },
-  "updated_at": "2026-01-17T18:30:00Z"
+  "updated_at": "2026-04-29T00:00:00+07:00"
 }

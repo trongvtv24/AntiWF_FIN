@@ -1,95 +1,95 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://awf.dev/schemas/preferences.schema.json",
-  "title": "AWF User Preferences Schema",
-  "description": "User preferences for AI communication and working style",
-  "version": "2.0.0",
+  "title": "AWF v4 User Preferences Schema",
+  "description": "User and project preferences for communication, autonomy, quality level, and custom rules.",
+  "version": "4.0.0",
   "type": "object",
   "properties": {
+    "meta": {
+      "type": "object",
+      "properties": {
+        "schema_version": { "type": "string", "default": "4.0.0" },
+        "awf_version": { "type": "string", "default": "4.0.0" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "updated_at": { "type": "string", "format": "date-time" }
+      }
+    },
     "updated_at": {
       "type": "string",
       "format": "date-time"
     },
     "communication": {
       "type": "object",
-      "description": "How AI communicates",
       "properties": {
+        "default_language": {
+          "type": "string",
+          "default": "vi"
+        },
         "tone": {
           "type": "string",
-          "enum": ["friendly", "professional", "casual", "custom"],
-          "default": "friendly",
-          "description": "Tone of voice"
+          "enum": ["friendly", "professional", "casual", "direct", "custom"],
+          "default": "friendly"
         },
-        "tone_custom": {
-          "type": "string",
-          "description": "Custom tone description if tone=custom"
-        },
+        "tone_custom": { "type": "string" },
         "persona": {
           "type": "string",
           "enum": ["assistant", "mentor", "senior_dev", "partner", "coach", "custom"],
-          "default": "assistant",
-          "description": "AI personality"
+          "default": "assistant"
         },
-        "persona_custom": {
-          "type": "string",
-          "description": "Custom persona description if persona=custom"
-        }
+        "persona_custom": { "type": "string" },
+        "address_user_as": { "type": "string" },
+        "self_reference": { "type": "string" }
       }
     },
     "technical": {
       "type": "object",
-      "description": "Technical detail preferences",
       "properties": {
         "detail_level": {
           "type": "string",
           "enum": ["results_only", "simple", "learning", "full_technical"],
-          "default": "simple",
-          "description": "How much technical detail to show"
+          "default": "simple"
         },
         "autonomy": {
           "type": "string",
           "enum": ["ask_often", "balanced", "autonomous"],
-          "default": "ask_often",
-          "description": "How much AI decides on its own"
+          "default": "balanced"
         },
         "quality": {
           "type": "string",
           "enum": ["mvp", "production", "enterprise"],
-          "default": "production",
-          "description": "Output quality level"
+          "default": "production"
         },
         "technical_level": {
           "type": "string",
           "enum": ["newbie", "basic", "technical"],
-          "default": "basic",
-          "description": "User technical proficiency level for language adaptation"
+          "default": "basic"
         }
       }
     },
     "working_style": {
       "type": "object",
-      "description": "How to work together",
       "properties": {
         "pace": {
           "type": "string",
           "enum": ["careful", "fast"],
-          "default": "careful",
-          "description": "Work pace preference"
+          "default": "careful"
         },
         "feedback": {
           "type": "string",
           "enum": ["gentle", "direct", "silent"],
-          "default": "gentle",
-          "description": "How AI gives feedback"
+          "default": "direct"
+        },
+        "confirmation_style": {
+          "type": "string",
+          "enum": ["milestones", "risky_actions_only", "ask_often"],
+          "default": "risky_actions_only"
         }
       }
     },
     "custom_rules": {
       "type": "array",
-      "description": "User-defined custom rules",
-      "items": {
-        "type": "string"
-      }
+      "items": { "type": "string" }
     }
   }
 }
