@@ -1,5 +1,7 @@
 # AntiWF_FIN - Antigravity Workflow Framework v4.0
 
+[Tiếng Việt](README.vi.md)
+
 AntiWF_FIN is the AWF v4 system bundle for Antigravity: global slash-command workflows, reusable skills, schemas, templates, and a central manifest that routes user intent into the right workflow and skill set.
 
 ## Source Of Truth
