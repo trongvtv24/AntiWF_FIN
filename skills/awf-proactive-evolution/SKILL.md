@@ -26,6 +26,8 @@ required_gates:
 
 Kỹ năng này là một hệ thống ngầm (auto-activate) giúp AWF thông minh hơn theo thời gian.
 
+Default mode is advisory only: detect an improvement opportunity, explain it briefly, and wait for explicit user approval before any durable change is routed to another workflow.
+
 ## Trigger Conditions
 
 **Activates when:**
@@ -43,11 +45,11 @@ Kỹ năng này là một hệ thống ngầm (auto-activate) giúp AWF thông m
    - *"Em thấy cách... tốt hơn cách cũ. Anh có muốn em cập nhật luật này vĩnh viễn vào bộ Skill không?"*
    - Giải thích ngắn ngọn lợi ích (nhanh hơn, ít lỗi hơn, dễ đọc hơn).
 
-3. **Cập nhật vĩnh viễn (Update Permanent Memory):**
-   Nếu user đồng ý, AI sẽ:
-   - Dùng tool chỉnh sửa trực tiếp vào file `SKILL.md` tương ứng.
-   - Thêm quy tắc đó vào `brain.json` nếu nó là quy tắc mức độ dự án.
-   - Hoặc thêm hướng dẫn vào workflow `.md` toàn cục.
+3. **Confirmed Handoff (Apply Mode):**
+   This skill itself does not edit files. If the user explicitly approves the proposal, hand off to the right workflow:
+   - Use `/customize` for durable user preferences.
+   - Use `/save-brain` for project memory, claims, decisions, or session handover.
+   - Use `/code` for approved workflow or skill file edits.
 
 ## Giao tiếp (Communication)
 

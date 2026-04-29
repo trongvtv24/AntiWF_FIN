@@ -68,6 +68,28 @@ VISUAL_JSON_EXAMPLE_FILES = (
     "skills/squirrel-video-director/SKILL.md",
 )
 
+GENERIC_WORKFLOW_WRITES = {"workflow_defined_artifacts"}
+
+ABSOLUTE_EXTERNAL_CLAIM_PATTERNS = (
+    ("absolute free claim", re.compile(r"\b100%\s+free\b", re.IGNORECASE)),
+    ("hard-coded daily request quota", re.compile(r"\b\d[\d,]*\s*req/day\b", re.IGNORECASE)),
+    ("hard-coded daily token quota", re.compile(r"\b\d+(?:\.\d+)?M\s+tokens/day\b", re.IGNORECASE)),
+    ("stale free-tier reference heading", re.compile(r"\bFree Tier Limits Reference\b", re.IGNORECASE)),
+)
+
+SUGGESTION_ONLY_MUTATION_MARKERS = (
+    "directly edit",
+    "edit files",
+    "write files",
+    "write to",
+    "chinh sua truc tiep",
+    "chỉnh sửa trực tiếp",
+    "cap nhat vinh vien",
+    "cập nhật vĩnh viễn",
+)
+
+SUGGESTION_ONLY_EXEMPTION = "this skill itself does not edit files"
+
 
 @dataclass(frozen=True)
 class Issue:
@@ -89,7 +111,9 @@ class AwfValidator:
             "json_files": 0,
             "schema_templates": 0,
             "json_examples": 0,
+            "semantic_contracts": 0,
         }
+        self.frontmatter_cache: dict[Path, dict[str, Any] | None] = {}
 
     def error(self, path: str | Path, message: str) -> None:
         self.errors.append(Issue(str(path), message))
@@ -111,33 +135,42 @@ class AwfValidator:
             return None
 
     def extract_frontmatter(self, path: Path) -> dict[str, Any] | None:
+        if path in self.frontmatter_cache:
+            return self.frontmatter_cache[path]
+
         rel_path = self.rel(path)
         try:
             text = path.read_text(encoding="utf-8")
         except Exception as exc:
             self.error(rel_path, f"Cannot read file: {exc}")
+            self.frontmatter_cache[path] = None
             return None
 
         if not text.startswith("---"):
             self.error(rel_path, "Missing YAML frontmatter delimiter at file start.")
+            self.frontmatter_cache[path] = None
             return None
 
         end = text.find("\n---", 3)
         if end == -1:
             self.error(rel_path, "Missing YAML frontmatter closing delimiter.")
+            self.frontmatter_cache[path] = None
             return None
 
         try:
             data = yaml.safe_load(text[3:end].strip()) or {}
         except Exception as exc:
             self.error(rel_path, f"Frontmatter YAML parse failed: {exc}")
+            self.frontmatter_cache[path] = None
             return None
 
         if not isinstance(data, dict):
             self.error(rel_path, "Frontmatter must parse to a mapping/object.")
+            self.frontmatter_cache[path] = None
             return None
 
         self.counts["frontmatters"] += 1
+        self.frontmatter_cache[path] = data
         return data
 
     def check_path_exists(self, value: str, owner: str) -> Path | None:
@@ -226,6 +259,7 @@ class AwfValidator:
         self.validate_workflows(workflows, skill_names, workflow_commands, gate_names)
         self.validate_skills(skills, workflow_commands, gate_names)
         self.validate_manifest_coverage(workflows, skills)
+        self.validate_semantic_contracts(workflows, skills)
         return manifest
 
     def validate_workflows(
@@ -379,6 +413,59 @@ class AwfValidator:
             rel = self.rel(path)
             if rel not in manifest_skill_paths:
                 self.warn(rel, "Skill file is not listed in awf_manifest.yaml.")
+
+    def validate_semantic_contracts(self, workflows: list[Any], skills: list[Any]) -> None:
+        for workflow in workflows:
+            if not isinstance(workflow, dict):
+                continue
+            path_value = workflow.get("path")
+            if not isinstance(path_value, str):
+                continue
+            path = self.root / path_value
+            if not path.exists():
+                continue
+
+            fm = self.extract_frontmatter(path)
+            if not fm:
+                continue
+
+            self.counts["semantic_contracts"] += 1
+            writes = fm.get("writes")
+            owner = self.rel(path)
+            if not isinstance(writes, list):
+                self.error(owner, "Frontmatter `writes` must be a list.")
+                continue
+            if any(write in GENERIC_WORKFLOW_WRITES for write in writes):
+                self.error(owner, "`writes` must declare concrete artifacts instead of generic placeholders.")
+
+        for skill in skills:
+            if not isinstance(skill, dict):
+                continue
+            path_value = skill.get("path")
+            if not isinstance(path_value, str):
+                continue
+            path = self.root / path_value
+            if not path.exists():
+                continue
+
+            owner = self.rel(path)
+            try:
+                text = path.read_text(encoding="utf-8")
+            except Exception as exc:
+                self.error(owner, f"Cannot read file for semantic checks: {exc}")
+                continue
+
+            self.counts["semantic_contracts"] += 1
+            for label, pattern in ABSOLUTE_EXTERNAL_CLAIM_PATTERNS:
+                if pattern.search(text):
+                    self.error(owner, f"Time-sensitive external claim must be verification-gated: {label}.")
+
+            allowed_side_effects = skill.get("allowed_side_effects") or []
+            if "suggestion_only" in allowed_side_effects:
+                lower_text = text.lower()
+                has_mutation_marker = any(marker in lower_text for marker in SUGGESTION_ONLY_MUTATION_MARKERS)
+                if has_mutation_marker and SUGGESTION_ONLY_EXEMPTION not in lower_text:
+                    self.error(owner, "`suggestion_only` skill describes file mutation without an explicit no-edit boundary.")
 
     def tracked_json_files(self) -> list[Path]:
         try:

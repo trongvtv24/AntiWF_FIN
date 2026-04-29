@@ -24,7 +24,7 @@ reads:
   - "global_workflows/GLOBAL_SAFETY_TRUTHFULNESS_GATE.md"
   - "global_workflows/CONTEXT_SYSTEM.md"
 writes:
-  - "workflow_defined_artifacts"
+  - ".brain/preferences.json"
 required_gates:
   - "context_system"
 skill_hooks:

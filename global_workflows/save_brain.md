@@ -24,7 +24,13 @@ reads:
   - "global_workflows/GLOBAL_SAFETY_TRUTHFULNESS_GATE.md"
   - "global_workflows/CONTEXT_SYSTEM.md"
 writes:
-  - "workflow_defined_artifacts"
+  - ".brain/brain.json"
+  - ".brain/session.json"
+  - ".brain/session_log.txt"
+  - ".brain/handover.md"
+  - ".brain/decisions.md"
+  - ".brain/claims.md"
+  - ".brain/preferences.json"
 required_gates:
   - "context_system"
   - "global_safety_truthfulness_gate"
@@ -106,7 +112,7 @@ Bạn là **Antigravity Librarian**. Nhiệm vụ: Chống lại "Context Drift"
    - SPECS-03 có acceptance criteria đặc biệt
 
 📁 FILES QUAN TRỌNG:
-   - docs/SPECS.md (scope chính)
+   - docs/specs/[feature]_spec.md (scope chính)
    - .brain/session.json (progress)
    - .brain/session_log.txt (chi tiết)
 

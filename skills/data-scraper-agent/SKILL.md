@@ -1,6 +1,12 @@
 ---
 name: data-scraper-agent
-description: Build a fully automated AI-powered data collection agent for any public source — job boards, prices, news, GitHub, sports, anything. Scrapes on a schedule, enriches data with a free LLM (Gemini Flash), stores results in Notion/Sheets/Supabase, and learns from user feedback. Runs 100% free on GitHub Actions. Use when the user wants to monitor, collect, or track any public data automatically.
+description: >-
+  Build a fully automated AI-powered data collection agent for any public source: job boards,
+  prices, news, GitHub, sports, or other public data. Scrapes on a schedule, enriches data with
+  an LLM API where available, stores results in Notion/Sheets/Supabase, and learns from user
+  feedback. Designed for a free-tier-friendly stack, but provider quotas, pricing, and terms must
+  be verified from official docs before asserting current limits. Use when the user wants to
+  monitor, collect, or track public data automatically.
 origin: community
 version: 1.0.0
 # AWF_METADATA_START
@@ -28,9 +34,9 @@ required_gates:
 # Data Scraper Agent
 
 Build a production-ready, AI-powered data collection agent for any public data source.
-Runs on a schedule, enriches results with a free LLM, stores to a database, and improves over time.
+Runs on a schedule, enriches results with an LLM API where available, stores to a database, and improves over time.
 
-**Stack: Python · Gemini Flash (free) · GitHub Actions (free) · Notion / Sheets / Supabase**
+**Stack: Python · Gemini-compatible LLM · GitHub Actions · Notion / Sheets / Supabase**
 
 ## When to Activate
 
@@ -55,16 +61,22 @@ schedule   summarises Sheets /
            & classifies Supabase
 ```
 
-### Free Stack
+### Free-Tier-Friendly Stack
 
 | Layer | Tool | Why |
 |---|---|---|
 | **Scraping** | `requests` + `BeautifulSoup` | No cost, covers 80% of public sites |
-| **JS-rendered sites** | `playwright` (free) | When HTML scraping fails |
-| **AI enrichment** | Gemini Flash via REST API | 500 req/day, 1M tokens/day — free |
-| **Storage** | Notion API | Free tier, great UI for review |
-| **Schedule** | GitHub Actions cron | Free for public repos |
+| **JS-rendered sites** | `playwright` | When HTML scraping fails |
+| **AI enrichment** | Gemini-compatible REST API | Verify current quota, pricing, and terms before use |
+| **Storage** | Notion API / Sheets / Supabase | Verify current plan limits before use |
+| **Schedule** | GitHub Actions cron | Verify current runner and minutes limits before use |
 | **Learning** | JSON feedback file in repo | Zero infra, persists in git |
+
+### Current Limits Rule
+
+Before generating final implementation or telling the user a provider is free, verify current quotas,
+pricing, and terms from official provider documentation in that session. If not verified, describe the
+stack as "free-tier-friendly" rather than free.
 
 ### AI Model Fallback Chain
 
@@ -88,7 +100,7 @@ for item in items:
 
 # GOOD: 7 API calls for 33 items (batch size 5)
 for batch in chunks(items, size=5):
-    results = call_ai(batch)  # 7 calls → stays within free tier
+    results = call_ai(batch)  # 7 calls -> reduces quota pressure
 ```
 
 ---
@@ -716,17 +728,16 @@ soup = BeautifulSoup(html, "lxml")
 
 ---
 
-## Free Tier Limits Reference
+## Provider Limits Verification
 
-| Service | Free Limit | Typical Usage |
+| Service | What to verify | Where it affects |
 |---|---|---|
-| Gemini Flash Lite | 30 RPM, 1500 RPD | ~56 req/day at 3-hr intervals |
-| Gemini 2.0 Flash | 15 RPM, 1500 RPD | Good fallback |
-| Gemini 2.5 Flash | 10 RPM, 500 RPD | Use sparingly |
-| GitHub Actions | Unlimited (public repos) | ~20 min/day |
-| Notion API | Unlimited | ~200 writes/day |
-| Supabase | 500MB DB, 2GB transfer | Fine for most agents |
-| Google Sheets API | 300 req/min | Works for small agents |
+| Gemini-compatible models | Current model names, rate limits, quotas, pricing, and terms | AI enrichment, batching, fallback chain |
+| GitHub Actions | Current runner minutes, cron behavior, public/private repo limits, and fair-use terms | Scheduling and hosting |
+| Notion API | Current API rate limits, database constraints, and plan limits | Storage writes and review workflow |
+| Supabase | Current database, bandwidth, auth, and project limits | Storage and hosted backend options |
+| Google Sheets API | Current API quota and account-level limits | Lightweight tabular storage |
+| Source websites/APIs | Terms of service, robots.txt, public API quotas, and crawl rules | Scraper legality, reliability, and rate limiting |
 
 ---
 
@@ -782,4 +793,4 @@ Before marking the agent complete:
 
 A complete working agent built with this exact architecture would scrape 4+ sources,
 batch Gemini calls, learn from Applied/Rejected decisions stored in Notion, and run
-100% free on GitHub Actions. Follow Steps 1–9 above to build your own.
+on a free-tier-friendly schedule when current provider limits allow it. Follow Steps 1-9 above to build your own.

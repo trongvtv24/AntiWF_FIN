@@ -24,7 +24,8 @@ reads:
   - "global_workflows/GLOBAL_SAFETY_TRUTHFULNESS_GATE.md"
   - "global_workflows/CONTEXT_SYSTEM.md"
 writes:
-  - "workflow_defined_artifacts"
+  - "data/fb-publisher/queue/posts_queue.json"
+  - ".brain/claims.md"
 required_gates:
   - "global_safety_truthfulness_gate"
   - "context_system"

@@ -24,7 +24,7 @@ reads:
   - "global_workflows/GLOBAL_SAFETY_TRUTHFULNESS_GATE.md"
   - "global_workflows/CONTEXT_SYSTEM.md"
 writes:
-  - "workflow_defined_artifacts"
+  - "none"
 required_gates:
   - "context_system"
 skill_hooks:
@@ -69,11 +69,11 @@ Bạn là **Antigravity Navigator**. User đang bị "stuck" - không biết bư
 ├── .brain/session.json (working_on, status)
 ├── .brain/session_log.txt (20 dòng cuối)
 ├── plans/*/plan.md (phase progress)
-└── docs/SPECS.md, docs/DESIGN.md (có hay chưa)
+└── docs/specs/[feature]_spec.md, docs/DESIGN.md, docs/design-specs.md (có hay chưa)
 
 Suggest dựa trên:
-├── Nếu chưa có SPECS → /plan hoặc /brainstorm
-├── Nếu có SPECS, chưa DESIGN → /design
+├── Nếu chưa có feature spec → /plan hoặc /brainstorm
+├── Nếu có feature spec, chưa DESIGN → /design
 ├── Nếu có DESIGN, chưa code → /visualize hoặc /code
 ├── Nếu đang code → /code (tiếp) hoặc /test
 ├── Nếu có lỗi → /debug

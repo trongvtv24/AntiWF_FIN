@@ -24,7 +24,8 @@ reads:
   - "global_workflows/GLOBAL_SAFETY_TRUTHFULNESS_GATE.md"
   - "global_workflows/CONTEXT_SYSTEM.md"
 writes:
-  - "workflow_defined_artifacts"
+  - "BRIEF.md"
+  - ".brain/claims.md"
 required_gates:
   - "global_safety_truthfulness_gate"
 skill_hooks:
@@ -34,6 +35,9 @@ skill_hooks:
     - "awf-research-agent"
     - "awf-document-parser"
     - "prompt-optimizer"
+    - "alex-hormozi-money-models"
+    - "alex-hormozi-offer-builder"
+    - "awf-data-science"
 handoff:
   next_workflows:
     - "/plan"

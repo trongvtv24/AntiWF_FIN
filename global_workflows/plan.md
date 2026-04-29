@@ -24,7 +24,8 @@ reads:
   - "global_workflows/GLOBAL_SAFETY_TRUTHFULNESS_GATE.md"
   - "global_workflows/CONTEXT_SYSTEM.md"
 writes:
-  - "workflow_defined_artifacts"
+  - "plans/[YYMMDD]-[HHMM]-[slug]/"
+  - "docs/specs/[feature]_spec.md"
 required_gates:
   - "global_safety_truthfulness_gate"
   - "context_system"
@@ -36,6 +37,8 @@ skill_hooks:
     - "awf-diagramming"
     - "context-engineering"
     - "postgres-patterns"
+    - "awf-data-science"
+    - "data-scraper-agent"
 handoff:
   next_workflows:
     - "/design"
@@ -329,7 +332,7 @@ AI ĐỀ XUẤT (đã hiểu context):
 
 **Nếu User chọn "OK luôn!":**
 → Chuyển ngay sang Giai đoạn 7 (Xác nhận tóm tắt)
-→ Tạo file `docs/SPECS.md` từ đề xuất
+→ Tạo file `docs/specs/[feature]_spec.md` từ đề xuất
 → Bắt đầu chia phases
 
 **Nếu User chọn "Điều chỉnh":**

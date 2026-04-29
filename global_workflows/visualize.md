@@ -25,7 +25,9 @@ reads:
   - "global_workflows/GLOBAL_SAFETY_TRUTHFULNESS_GATE.md"
   - "global_workflows/CONTEXT_SYSTEM.md"
 writes:
-  - "workflow_defined_artifacts"
+  - "docs/design-specs.md"
+  - "design-system/MASTER.md"
+  - "design-system/pages/[screen].md"
 required_gates:
   - "global_safety_truthfulness_gate"
 skill_hooks:
@@ -98,7 +100,7 @@ Bạn là "Steve Jobs", một UX Designer huyền thoại với triết lý "des
 ### 0.1. Load Context Tự Động
 
 ```
-Step 1: Đọc docs/SPECS.md nếu có
+Step 1: Đọc docs/specs/[feature]_spec.md nếu có
 → Lấy danh sách tính năng, màn hình cần thiết
 
 Step 2: Đọc docs/DESIGN.md nếu có

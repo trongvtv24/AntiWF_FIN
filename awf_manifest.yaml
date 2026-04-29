@@ -74,7 +74,7 @@ workflows:
     next_workflows: ["/plan", "/save-brain"]
     required_gates: ["global_safety_truthfulness_gate"]
     required_skills: ["awf-idea-refine"]
-    conditional_skills: ["awf-research-agent", "awf-document-parser", "prompt-optimizer"]
+    conditional_skills: ["awf-research-agent", "awf-document-parser", "prompt-optimizer", "alex-hormozi-money-models", "alex-hormozi-offer-builder", "awf-data-science"]
   - command: "/plan"
     name: "plan"
     path: "global_workflows/plan.md"
@@ -85,7 +85,7 @@ workflows:
     next_workflows: ["/design", "/visualize", "/code"]
     required_gates: ["global_safety_truthfulness_gate", "context_system"]
     required_skills: ["awf-spec-writer", "prompt-optimizer"]
-    conditional_skills: ["awf-diagramming", "context-engineering", "postgres-patterns"]
+    conditional_skills: ["awf-diagramming", "context-engineering", "postgres-patterns", "awf-data-science", "data-scraper-agent"]
   - command: "/design"
     name: "design"
     path: "global_workflows/design.md"
@@ -129,7 +129,7 @@ workflows:
     next_workflows: ["/test", "/debug", "/deploy"]
     required_gates: ["global_safety_truthfulness_gate", "context_system"]
     required_skills: []
-    conditional_skills: ["awf-port-manager", "awf-error-translator"]
+    conditional_skills: ["awf-error-translator"]
   - command: "/test"
     name: "test"
     path: "global_workflows/test.md"
@@ -162,7 +162,7 @@ workflows:
     next_workflows: ["/audit", "/refactor", "/save-brain"]
     required_gates: ["global_safety_truthfulness_gate"]
     required_skills: []
-    conditional_skills: ["awf-diagramming", "context-engineering", "ui-ux-pro-max"]
+    conditional_skills: ["awf-diagramming", "context-engineering", "ui-ux-pro-max", "awf-data-science", "awf-proactive-evolution"]
   - command: "/audit"
     name: "audit"
     path: "global_workflows/audit.md"
@@ -173,7 +173,7 @@ workflows:
     next_workflows: ["/code", "/test", "/deploy", "/save-brain"]
     required_gates: ["global_safety_truthfulness_gate"]
     required_skills: ["awf-red-teaming"]
-    conditional_skills: ["seo", "deployment-patterns", "performance-optimization", "awf-gitnexus-context"]
+    conditional_skills: ["seo", "deployment-patterns", "performance-optimization", "awf-gitnexus-context", "awf-data-science", "data-scraper-agent"]
   - command: "/refactor"
     name: "refactor"
     path: "global_workflows/refactor.md"
@@ -347,7 +347,7 @@ skills:
     activation: "intent"
     priority: "medium"
     risk_level: "medium"
-    related_workflows: ["/review", "/audit", "/brainstorm"]
+    related_workflows: ["/plan", "/review", "/audit", "/brainstorm"]
     allowed_side_effects: ["read_data", "generate_report"]
     requires_confirmation: false
   - name: "awf-deprecation-migration"
@@ -422,15 +422,6 @@ skills:
     related_workflows: ["/init", "/help"]
     allowed_side_effects: ["create_context_folder"]
     requires_confirmation: false
-  - name: "awf-port-manager"
-    path: "skills/awf-port-manager/SKILL.md"
-    category: "operations"
-    activation: "conditional"
-    priority: "medium"
-    risk_level: "high"
-    related_workflows: ["/run", "/debug"]
-    allowed_side_effects: ["inspect_ports", "kill_process_after_confirmation"]
-    requires_confirmation: true
   - name: "awf-proactive-evolution"
     path: "skills/awf-proactive-evolution/SKILL.md"
     category: "system"
@@ -557,15 +548,6 @@ skills:
     related_workflows: ["/code", "/debug", "/refactor", "/design", "/audit"]
     allowed_side_effects: ["none"]
     requires_confirmation: false
-  - name: "local-coccoc-control"
-    path: "skills/local-coccoc-control/SKILL.md"
-    category: "browser_control"
-    activation: "explicit_or_intent"
-    priority: "medium"
-    risk_level: "high"
-    related_workflows: ["/brainstorm", "/test", "/debug"]
-    allowed_side_effects: ["browser_control_after_confirmation"]
-    requires_confirmation: true
   - name: "manim-video"
     path: "skills/manim-video/SKILL.md"
     category: "video"
@@ -647,15 +629,6 @@ skills:
     related_workflows: ["/script"]
     allowed_side_effects: ["draft_prompts"]
     requires_confirmation: false
-  - name: "tai-video"
-    path: "skills/tai-video/SKILL.md"
-    category: "media"
-    activation: "explicit_or_intent"
-    priority: "low"
-    risk_level: "high"
-    related_workflows: ["/script"]
-    allowed_side_effects: ["download_media_after_confirmation"]
-    requires_confirmation: true
   - name: "timestamp-to-visual-prompt"
     path: "skills/timestamp-to-visual-prompt/SKILL.md"
     category: "video"

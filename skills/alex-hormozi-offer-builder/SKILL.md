@@ -37,6 +37,11 @@ Xuyên suốt toàn bộ quá trình tạo content và offer, BẠN PHẢI TUÂN
 1. **Dùng Storytelling (Kể chuyện/Chia sẻ):** Không hô hào chốt sale, hãy đóng vai người đã từng trải nghiệm/chuyên gia tâm sự để tăng Likelihood (Độ tin tưởng).
 2. **CẤM từ ngữ khẳng định tuyệt đối:** Không được dùng các từ như "100%", "tuyệt đối", "cam kết hoàn toàn", "chữa khỏi dứt điểm", "trị dứt điểm" để tránh việc AI của nền tảng quét quảng cáo cắm cờ (flag). Hãy dùng ngôn ngữ "mềm mại nhưng đánh thẳng vào cảm xúc".
 
+## AWF Truthfulness Boundary
+- Không tự bịa proof, testimonial, case study, số liệu doanh thu, số lượng khách, deadline, hoặc scarcity.
+- Guarantee, bonus value, discount, deadline chỉ được dùng khi user cung cấp hoặc xác nhận.
+- Claim chưa kiểm chứng phải được ghi là assumption/claim và không đưa vào offer cuối như fact.
+
 ---
 
 ## QUY TRÌNH 9 BƯỚC THỰC THI (STEP-BY-STEP INTERACTIVE)

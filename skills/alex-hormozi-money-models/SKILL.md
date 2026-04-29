@@ -31,6 +31,11 @@ required_gates:
 Giúp user xây dựng **chuỗi offer hoàn chỉnh** để tối đa doanh thu theo framework của Alex Hormozi:
 > *"Kiếm được nhiều hơn chi phí thu hút + phục vụ 1 khách hàng trong 30 ngày đầu tiên"*
 
+## AWF Truthfulness Boundary
+- Không tự bịa số liệu doanh thu, CAC/LTV, testimonial, case study, số lượng khách, deadline, hoặc scarcity.
+- Mọi mô hình tiền tệ phải tách rõ dữ liệu user cung cấp, giả định, và khuyến nghị.
+- Claim chưa kiểm chứng phải ở dạng assumption và cần user xác nhận trước khi dùng làm tài liệu bán hàng.
+
 ---
 
 ## ĐIỀU KIỆN KÍCH HOẠT

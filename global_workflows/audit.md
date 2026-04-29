@@ -24,7 +24,8 @@ reads:
   - "global_workflows/GLOBAL_SAFETY_TRUTHFULNESS_GATE.md"
   - "global_workflows/CONTEXT_SYSTEM.md"
 writes:
-  - "workflow_defined_artifacts"
+  - "reports/audit/*.md"
+  - ".brain/claims.md"
 required_gates:
   - "global_safety_truthfulness_gate"
 skill_hooks:
@@ -35,6 +36,8 @@ skill_hooks:
     - "deployment-patterns"
     - "performance-optimization"
     - "awf-gitnexus-context"
+    - "awf-data-science"
+    - "data-scraper-agent"
 handoff:
   next_workflows:
     - "/code"

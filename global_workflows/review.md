@@ -24,7 +24,7 @@ reads:
   - "global_workflows/GLOBAL_SAFETY_TRUTHFULNESS_GATE.md"
   - "global_workflows/CONTEXT_SYSTEM.md"
 writes:
-  - "workflow_defined_artifacts"
+  - "reports/review/*.md"
 required_gates:
   - "global_safety_truthfulness_gate"
 skill_hooks:
@@ -34,6 +34,8 @@ skill_hooks:
     - "awf-diagramming"
     - "context-engineering"
     - "ui-ux-pro-max"
+    - "awf-data-science"
+    - "awf-proactive-evolution"
 handoff:
   next_workflows:
     - "/audit"

@@ -249,16 +249,14 @@ if session.json not found:
     skip restore
 
 if session.json corrupted:
-    try: restore from latest snapshot
-    if success:
-        show: "Da khoi phuc tu backup."
-    else:
-        show: "Session bi loi. Bat dau fresh!"
-        create new session
+    show: "Session bi loi. Em se bo qua file nay va dung brain/log neu co."
+    suggest: "Chay /save-brain de tao lai session.json sau khi anh xac nhan."
+    do not write memory
 
 if summary missing:
     generate summary from available data
-    save to session.json
+    show summary in response only
+    suggest: "Chay /save-brain neu anh muon luu summary nay."
 ```
 
 ## Performance

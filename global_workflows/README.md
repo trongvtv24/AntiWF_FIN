@@ -22,7 +22,7 @@ reads:
   - "global_workflows/GLOBAL_SAFETY_TRUTHFULNESS_GATE.md"
   - "global_workflows/CONTEXT_SYSTEM.md"
 writes:
-  - "workflow_defined_artifacts"
+  - "none"
 required_gates:
   - "global_safety_truthfulness_gate"
   - "context_system"
@@ -54,8 +54,11 @@ handoff:
 | File | Vai trò |
 |------|--------|
 | `awf_manifest.yaml` | Router trung tâm: workflow nào chạy, skill nào được kích hoạt, risk level, handoff |
+| `global_workflows/references/CORE_OPERATING_GUIDE.md` | Load order nhẹ trước khi đọc workflow/skill dài |
 | `global_workflows/GLOBAL_SAFETY_TRUTHFULNESS_GATE.md` | Gate chống ảo giác: phân biệt fact, assumption, external claim, recommendation |
 | `global_workflows/CONTEXT_SYSTEM.md` | Chuẩn memory duy nhất cho `.brain/` |
+| `docs/specs/[feature]_spec.md` | Feature source of truth giữa `/plan`, `/design`, và `/code` |
+| `docs/DESIGN.md` | Architecture/database/API source of truth từ `/design` |
 | `docs/design-specs.md` | UI source of truth giữa `/visualize` và `/code` |
 
 **Routing precedence:**
@@ -381,7 +384,7 @@ AI hỏi bằng tiếng Việt:
 | `/recap` | 2.4KB | ⭐⭐⭐⭐ Good |
 | `/rollback` | 2.2KB | ⭐⭐⭐⭐ Good |
 
-**Tổng:** 19 workflows | **~55KB** instructions | **50+ điểm mù** được xử lý
+**Tổng:** 21 command workflows + 1 documentation workflow | instructions tracked in `global_workflows/` | **50+ điểm mù** được xử lý
 
 ---
 

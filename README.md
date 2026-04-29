@@ -7,6 +7,7 @@ AntiWF_FIN is the AWF v4 system bundle for Antigravity: global slash-command wor
 | File | Role |
 | --- | --- |
 | `awf_manifest.yaml` | Central router for workflows, skills, gates, risk levels, and handoff paths |
+| `global_workflows/references/CORE_OPERATING_GUIDE.md` | Lightweight load order and context-budget rules before reading long workflow or skill bodies |
 | `global_workflows/GLOBAL_SAFETY_TRUTHFULNESS_GATE.md` | Mandatory truthfulness and safety gate for claims, edits, deployment, publishing, research, and content |
 | `global_workflows/CONTEXT_SYSTEM.md` | Canonical memory contract for `.brain/` files |
 | `schemas/*.schema.json` | Machine-readable contracts for AWF memory files |
@@ -83,6 +84,7 @@ Typical Windows location:
 Run the AWF-aware validator after changing workflows, skills, schemas, templates, or `awf_manifest.yaml`:
 
 ```bash
+python -m pip install -r requirements-dev.txt
 python tools/validate_awf.py --strict
 ```
 

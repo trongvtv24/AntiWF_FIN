@@ -3,7 +3,7 @@ name: awf-research-agent
 description: >
   Deep research workflow — thu thập, triangulate và tổng hợp thông tin từ nhiều nguồn
   thành báo cáo có cấu trúc, có dẫn chứng rõ ràng. Khác với browse/search thông thường:
-  đây là research methodology có hệ thống. Tích hợp tốt với data-scraper-agent và local-coccoc-control.
+  đây là research methodology có hệ thống. Tích hợp tốt với data-scraper-agent.
   Keywords: research, tìm hiểu, khảo sát, phân tích thị trường, báo cáo, investigate, deep dive,
   market research, competitive analysis, fact-check, tổng hợp.
 version: 1.0.0

@@ -25,7 +25,8 @@ reads:
   - "global_workflows/GLOBAL_SAFETY_TRUTHFULNESS_GATE.md"
   - "global_workflows/CONTEXT_SYSTEM.md"
 writes:
-  - "workflow_defined_artifacts"
+  - "project_source_files"
+  - ".brain/session_log.txt"
 required_gates:
   - "global_safety_truthfulness_gate"
   - "context_system"
